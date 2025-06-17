@@ -1,0 +1,79 @@
+{
+  "identifier": "RCPT-20250521-001234",
+  "metadata": {
+    "terminalNumber": "POS-DE-KISSING-01",
+    "serialNumber": "SN-XYZ789-ABC456",
+    "cashierId": "CASHIER-123",
+    "loyaltyProgram": "XpenserClub"
+  },
+  "marketPlaceCode": "METRO-GERMANY",
+  "storeCode": "KISSING-STORE-BAV",
+  "timestamp": "2025-05-21T15:30:00Z",
+  "total": 24.90,
+  "currency": "EUR",
+  "payment": {
+    "amount": 24.90,
+    "mode": "CREDIT_CARD",
+    "currency": "EUR",
+    "tax": {
+      "total": 3.97,
+      "taxes": [
+        {
+          "type": "VAT",
+          "taxUnit": {
+            "value": 7.00,
+            "unit": "PERCENT"
+          },
+          "taxableAmount": 10.00,
+          "amount": 0.70,
+          "itemCategory": "GROCERIES_REDUCED_VAT"
+        },
+        {
+          "type": "VAT",
+          "taxUnit": {
+            "value": 19.00,
+            "unit": "PERCENT"
+          },
+          "taxableAmount": 19.00,
+          "amount": 3.27,
+          "itemCategory": "GENERAL_MERCHANDISE"
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "code": "PROD-ABC-001",
+      "title": "Organic Milk 1L",
+      "quantity": 2,
+      "price": 1.99,
+      "categoryCode": "DAIRY",
+      "unitValue": {
+        "unitCode": "LITER",
+        "value": 1.0
+      }
+    },
+    {
+      "code": "PROD-XYZ-002",
+      "title": "Artisan Bread (Rye)",
+      "quantity": 1,
+      "price": 3.49,
+      "categoryCode": "BAKERY",
+      "unitValue": {
+        "unitCode": "UNIT",
+        "value": 1.0
+      }
+    },
+    {
+      "code": "PROD-DEF-003",
+      "title": "Premium Coffee Beans 250g",
+      "quantity": 1,
+      "price": 10.99,
+      "categoryCode": "BEVERAGES_COFFEE",
+      "unitValue": {
+        "unitCode": "GRAM",
+        "value": 250.0
+      }
+    }
+  ]
+}

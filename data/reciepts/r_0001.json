@@ -1,0 +1,66 @@
+{
+    "identifier": "546546-8768768k-jhkj",
+    "metadata": {
+        "terminalNumber": "",
+        "serialNumber": ""
+    },
+    "marketPlaceCode": "v-markt",
+    "storeCode": "k",
+    "timestamp": "",
+    "total": 1.79,
+    "currency": "EUR",
+    "payment": {
+        "amount": 1.79,
+        "mode": "CASH",
+        "currency": "EUR",
+        "tax": {
+            "total": 0.12,
+            "taxes": [
+                {
+                    "type": "vat",
+                    "taxUnit": {
+                        "value": 7.00,
+                        "unit": "PERCENT"
+                    },
+                    "taxableAmount": 12.34,
+                    "amount": 0.12,
+                    "itemCategory": "A"
+                },
+                {
+                    "type": "vat",
+                    "taxUnit": {
+                        "value": 19.00,
+                        "unit": "PERCENT"
+                    },
+                    "taxableAmount": 12.34,
+                    "amount": 0.12,
+                    "itemCategory": "B"
+                }
+            ]
+        }
+    },
+    "items": [
+        {
+            "code": "090909",
+            "title": "iuyiuyiuy",
+            "quantity": 1,
+            "price": 12.45,
+            "categoryCode": "B",
+            "unitValue": {
+                "unitCode": "L",
+                "value": 0.69
+            }
+        },
+        {
+            "code": "wrerw3324",
+            "title": "23423rew4535 sdfs",
+            "quantity": 1,
+            "price": 12.45,
+            "categoryCode": "A",
+            "unitValue": {
+                "unitCode": "piece",
+                "value": 0.69
+            }
+        }
+    ]
+}
