@@ -27,16 +27,21 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @SpringBootTest
-
 @ActiveProfiles("test")
 @DisplayName("ReceiptServiceImpl Integration Tests")
 class ReceiptServiceImplTest implements PostgresTestcontainersTest {
 
+    @Autowired
+    private JpaTransactionManager transactionManager;
     @Autowired
     private ReceiptServiceImpl receiptService; // The service we are testing
 
@@ -52,7 +57,7 @@ class ReceiptServiceImplTest implements PostgresTestcontainersTest {
     private ObjectMapper objectMapper; // For reading JSON test data
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         // Clear the database before each test
         entityManager.createNativeQuery("TRUNCATE TABLE receipts CASCADE;").executeUpdate();
         entityManager.flush();
@@ -67,13 +72,14 @@ class ReceiptServiceImplTest implements PostgresTestcontainersTest {
      * Helper method to read the test.receipt.json file and deserialize it into a ReceiptRequestDto.
      */
     private ReceiptRequestDto readReceiptRequestDtoFromJson(String filename) throws IOException {
-        ClassPathResource resource = new ClassPathResource("com/consolefire/xpenser/store/service/impl/" + filename);
+        ClassPathResource resource = new ClassPathResource("data/" + filename);
         try (InputStream inputStream = resource.getInputStream()) {
             return objectMapper.readValue(inputStream, ReceiptRequestDto.class);
         }
     }
 
     @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @DisplayName("Should create a new receipt successfully from JSON data")
     void shouldCreateReceiptSuccessfullyFromJson() throws IOException {
         // Given
@@ -109,6 +115,7 @@ class ReceiptServiceImplTest implements PostgresTestcontainersTest {
 
 
     @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @DisplayName("Should throw ReceiptExistsException if receipt already exists from JSON data")
     void shouldThrowExceptionIfReceiptExistsFromJson() throws IOException {
         // Given
@@ -152,6 +159,7 @@ class ReceiptServiceImplTest implements PostgresTestcontainersTest {
 
 
     @Test
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @DisplayName("Should handle null timestamp in request DTO and set current Instant from JSON data")
     void shouldSetGeneratedAtIfNullInDtoFromJson() throws IOException {
         // Given

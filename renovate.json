@@ -1,0 +1,48 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard"
+  ],
+  "dependencyDashboard": true,
+  "maven": {},
+  "enabledManagers": [
+    "maven"
+  ],
+  "versioning": "semver",
+  "rangeStrategy": "replace",
+  "timezone": "Europe/Berlin",
+  "major": {
+    "enabled": true,
+    "dependencyDashboardApproval": true
+  },
+  "npm": {
+    "enabled": false
+  },
+  "vulnerabilityAlerts": {},
+  "branchPrefix": "dependency-upgrade/",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "registryUrls": [
+        "https://repo1.maven.org/maven2/"
+      ]
+    },
+    {
+      "matchPackageNames": [
+        "/^com.consolefire.relayer:relayer/"
+      ],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "!/^com.consolefire.relayer:relayer/"
+      ],
+      "enabled": true,
+      "commitMessagePrefix": "DEPENDENCY-UPGRADE: ",
+      "prPriority": -1
+    }
+  ]
+}
