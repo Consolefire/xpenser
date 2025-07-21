@@ -1,0 +1,22 @@
+eureka:
+  client:
+    enabled: true
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: xpenser-api-gateway
+  config:
+    import: optional:configserver:http://localhost:8660/,http://localhost:8661/
+  cloud:
+    config:
+      uri: http://localhost:8660,http://localhost:8661
+      multiple-uri-strategy: connection-timeout-only
+      fail-fast: true
+      label: ${GIT_BRANCH_NAME:main}
+

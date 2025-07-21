@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    config:
+      server:
+        enabled: true
+        native:
+          searchLocations:
+            - file:///${PATH_TO_CONFIG_REPO:${user.home}/.xpenser/config-repo}
+

@@ -1,0 +1,91 @@
+
+name: xpenser-cloud-infra
+
+services:
+
+  cloud-discovery-01:
+    image: consolefire.com/spring-cloud-infra/discovery-server:1.0.0-SNAPSHOT_jdk24
+    hostname: cloud-discovery-01
+    ports:
+      - 8761:8760
+    environment:
+      APPLICATION_NAME: discovery-server-01
+      EUREKA_PREFER_IP_ADDRESS: false
+      EUREKA_PEER_1_HOST: cloud-discovery-01
+      EUREKA_PEER_1_PORT: 8760
+      EUREKA_PEER_2_HOST: cloud-discovery-02
+      EUREKA_PEER_2_PORT: 8760
+      EUREKA_PEER_3_HOST: cloud-discovery-03
+      EUREKA_PEER_3_PORT: 8760
+      SPRING_PROFILES_ACTIVE: default,3peer,peer1
+  cloud-discovery-02:
+    image: consolefire.com/spring-cloud-infra/discovery-server:1.0.0-SNAPSHOT_jdk24
+    hostname: cloud-discovery-02
+    ports:
+      - 8762:8760
+    environment:
+      APPLICATION_NAME: discovery-server-02
+      EUREKA_PREFER_IP_ADDRESS: false
+      EUREKA_PEER_1_HOST: cloud-discovery-01
+      EUREKA_PEER_1_PORT: 8760
+      EUREKA_PEER_2_HOST: cloud-discovery-02
+      EUREKA_PEER_2_PORT: 8760
+      EUREKA_PEER_3_HOST: cloud-discovery-03
+      EUREKA_PEER_3_PORT: 8760
+      SPRING_PROFILES_ACTIVE: default,3peer,peer2
+  cloud-discovery-03:
+    image: consolefire.com/spring-cloud-infra/discovery-server:1.0.0-SNAPSHOT_jdk24
+    hostname: cloud-discovery-03
+    ports:
+      - 8763:8760
+    environment:
+      APPLICATION_NAME: discovery-server-03
+      EUREKA_PREFER_IP_ADDRESS: false
+      EUREKA_PEER_1_HOST: cloud-discovery-01
+      EUREKA_PEER_1_PORT: 8760
+      EUREKA_PEER_2_HOST: cloud-discovery-02
+      EUREKA_PEER_2_PORT: 8760
+      EUREKA_PEER_3_HOST: cloud-discovery-03
+      EUREKA_PEER_3_PORT: 8760
+      SPRING_PROFILES_ACTIVE: default,3peer,peer3
+
+  config-server-01:
+    image: consolefire.com/spring-cloud-infra/config-server:1.0.0-SNAPSHOT_jdk24
+    hostname: config-server-01
+    links:
+      - cloud-discovery-01
+      - cloud-discovery-02
+      - cloud-discovery-03
+    ports:
+      - 8660:8690
+    volumes:
+      - ./configs/config-repo:/etc/application/config/
+      - /Users/sdas/repository/consolefire/xpenser-config-repo:/etc/application/config-repo/xpenser-config-repo
+
+    environment:
+      APPLICATION_NAME: config-server
+      DISCOVERY_SERVER_URL: http://cloud-discovery-01:8760/eureka/,http://cloud-discovery-02:8760/eureka/,http://cloud-discovery-03:8760/eureka/
+      SPRING_PROFILES_ACTIVE: remote
+      NATIVE_CONFIG_REPO_PATH: /etc/application/config-repo/xpenser-config-repo
+      REMOTE_CONFIG_REPO_URL: https://github.com/Consolefire/xpenser-config-repo
+
+  config-server-02:
+    image: consolefire.com/spring-cloud-infra/config-server:1.0.0-SNAPSHOT_jdk24
+    hostname: config-server-02
+    links:
+      - cloud-discovery-01
+      - cloud-discovery-02
+      - cloud-discovery-03
+    ports:
+      - 8661:8690
+    volumes:
+      - ./configs/config-repo:/etc/application/config/
+      - /Users/sdas/repository/consolefire/xpenser-config-repo:/etc/application/config-repo/xpenser-config-repo
+    environment:
+      APPLICATION_NAME: config-server
+      DISCOVERY_SERVER_URL: http://cloud-discovery-01:8760/eureka/,http://cloud-discovery-02:8760/eureka/,http://cloud-discovery-03:8760/eureka/
+      SPRING_PROFILES_ACTIVE: remote
+      NATIVE_CONFIG_REPO_PATH: /etc/application/config-repo/xpenser-config-repo
+      REMOTE_CONFIG_REPO_URL: https://github.com/Consolefire/xpenser-config-repo
+
+###

@@ -1,0 +1,6 @@
+
+server:
+  port: ${EUREKA_PEER_3_PORT:8773}
+eureka:
+  instance:
+    hostname: ${EUREKA_PEER_3_HOST:localhost}

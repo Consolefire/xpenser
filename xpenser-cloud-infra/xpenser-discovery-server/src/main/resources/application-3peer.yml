@@ -1,0 +1,4 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL_PEER_1:http://${EUREKA_PEER_1_HOST}:${EUREKA_PEER_1_PORT}/eureka/},${EUREKA_SERVICE_URL_PEER_2:http://${EUREKA_PEER_2_HOST}:${EUREKA_PEER_2_PORT}/eureka/},${EUREKA_SERVICE_URL_PEER_3:http://${EUREKA_PEER_3_HOST}:${EUREKA_PEER_3_PORT}/eureka/}

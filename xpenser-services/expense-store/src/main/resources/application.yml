@@ -1,0 +1,39 @@
+
+common:
+  infra:
+    db:
+      host: 127.0.0.1
+      port: 15432
+      database-name: neverland
+      default-schema: expense_store
+      username: peterpan
+      password: P3terP@n
+      driver-class-name: org.postgresql.Driver
+      pool:
+        maximum-size: 100
+
+debug: true
+
+server:
+  port: ${EXPENSE_STORE_APP_PORT:9001}
+
+spring:
+  application:
+    name: expense-store
+
+  datasource:
+    driver-class-name: ${common.infra.db.driver-class-name}
+    url: jdbc:postgresql://${common.infra.db.host}:${common.infra.db.port}/${common.infra.db.database-name}?currentSchema=${common.infra.db.default-schema}
+    username: ${common.infra.db.username}
+    password: ${common.infra.db.password}
+
+
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      format-sql: true
+
+  flyway:
+    enabled: true

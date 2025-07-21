@@ -1,0 +1,31 @@
+name: xpenser-nginx
+
+networks:
+  xpenser_cloud_infra_net:
+    external: true
+  xpenser_auth_net:
+    external: true
+  xpenser_gateway_net:
+    external: true
+  xpenser_data_net:
+    external: true
+
+services:
+
+  # Nginx Proxy Service (Now also connected to data network and proxying DB)
+  xpenser-nginx-proxy:
+    image: nginx:latest
+    container_name: xpenser-nginx-proxy
+    hostname: xpenser-nginx
+    volumes:
+      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - xpenser_cloud_infra_net
+      - xpenser_gateway_net
+      - xpenser_auth_net
+      - xpenser_data_net
+    ports:
+      - "80:80"     # For HTTP/HTTPS traffic
+      - "5432:5432" # NEW: For PostgreSQL TCP traffic (Host:Container)
+
+

@@ -1,0 +1,42 @@
+name: xpenser-data
+
+volumes:
+  xpenser-postgres-data:
+    name: xpenser-postgres-data
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./volumes/postgresql
+
+networks:
+  xpenser_data_net:
+    external: true
+
+services:
+
+  xpenser-postgres-db:
+    image: postgres:17
+    hostname: xpenser-postgres-db
+    restart: on-failure
+    # set shared memory limit when using docker-compose
+    shm_size: 1Gb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
+    networks:
+      - xpenser_data_net
+#    ports:
+#      - 15432:5432
+    volumes:
+      - xpenser-postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: peterpan
+      POSTGRES_PASSWORD: P3terP@n
+      POSTGRES_DB: neverland
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256

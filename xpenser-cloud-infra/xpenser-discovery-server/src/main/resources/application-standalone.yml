@@ -1,0 +1,9 @@
+server:
+  port: ${EUREKA_STANDALONE_PORT:8770}
+
+eureka:
+  instance:
+    hostname: ${EUREKA_STANDALONE_HOST:localhost}
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_STANDALONE_SERVICE_URL:http://${eureka.instance.hostname}:${server.port}/eureka/}

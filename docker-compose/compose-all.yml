@@ -1,0 +1,241 @@
+version: '3.8'
+
+volumes:
+  xpenser-postgres-data:
+    name: xpenser-postgres-data
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./volumes/postgresql
+
+networks:
+  xpenser_cloud_network:
+    external: true
+
+services:
+
+  # Cloud Discovery Services
+  cloud-discovery-01:
+    image: consolefire.com/spring-cloud-infra/discovery-server:1.0.0-SNAPSHOT_jdk24
+    hostname: cloud-discovery-01
+    container_name: cloud-discovery-01
+    networks:
+      - xpenser_cloud_infra_net
+    ports:
+      - "8761:8760"
+    environment:
+      APPLICATION_NAME: discovery-server-01
+      EUREKA_PREFER_IP_ADDRESS: false
+      EUREKA_PEER_1_HOST: cloud-discovery-01
+      EUREKA_PEER_1_PORT: 8760
+      EUREKA_PEER_2_HOST: cloud-discovery-02
+      EUREKA_PEER_2_PORT: 8760
+      EUREKA_PEER_3_HOST: cloud-discovery-03
+      EUREKA_PEER_3_PORT: 8760
+      SPRING_PROFILES_ACTIVE: default,3peer,peer1
+
+  cloud-discovery-02:
+    image: consolefire.com/spring-cloud-infra/discovery-server:1.0.0-SNAPSHOT_jdk24
+    hostname: cloud-discovery-02
+    container_name: cloud-discovery-02
+    networks:
+      - xpenser_cloud_infra_net
+    ports:
+      - "8762:8760"
+    environment:
+      APPLICATION_NAME: discovery-server-02
+      EUREKA_PREFER_IP_ADDRESS: false
+      EUREKA_PEER_1_HOST: cloud-discovery-01
+      EUREKA_PEER_1_PORT: 8760
+      EUREKA_PEER_2_HOST: cloud-discovery-02
+      EUREKA_PEER_2_PORT: 8760
+      EUREKA_PEER_3_HOST: cloud-discovery-03
+      EUREKA_PEER_3_PORT: 8760
+      SPRING_PROFILES_ACTIVE: default,3peer,peer2
+
+  cloud-discovery-03:
+    image: consolefire.com/spring-cloud-infra/discovery-server:1.0.0-SNAPSHOT_jdk24
+    hostname: cloud-discovery-03
+    container_name: cloud-discovery-03
+    networks:
+      - xpenser_cloud_infra_net
+    ports:
+      - "8763:8760"
+    environment:
+      APPLICATION_NAME: discovery-server-03
+      EUREKA_PREFER_IP_ADDRESS: false
+      EUREKA_PEER_1_HOST: cloud-discovery-01
+      EUREKA_PEER_1_PORT: 8760
+      EUREKA_PEER_2_HOST: cloud-discovery-02
+      EUREKA_PEER_2_PORT: 8760
+      EUREKA_PEER_3_HOST: cloud-discovery-03
+      EUREKA_PEER_3_PORT: 8760
+      SPRING_PROFILES_ACTIVE: default,3peer,peer3
+
+  # Config Server Services
+  config-server-01:
+    image: consolefire.com/spring-cloud-infra/config-server:1.0.0-SNAPSHOT_jdk24
+    hostname: config-server-01
+    container_name: config-server-01
+    networks:
+      - xpenser_cloud_infra_net
+    ports:
+      - "8660:8690"
+    volumes:
+      - ./configs/config-repo:/etc/application/config/
+      - /Users/sdas/repository/consolefire/xpenser-config-repo:/etc/application/config-repo/xpenser-config-repo
+    environment:
+      APPLICATION_NAME: config-server
+      DISCOVERY_SERVER_URL: http://cloud-discovery-01:8760/eureka/,http://cloud-discovery-02:8760/eureka/,http://cloud-discovery-03:8760/eureka/
+      SPRING_PROFILES_ACTIVE: remote
+      NATIVE_CONFIG_REPO_PATH: /etc/application/config-repo/xpenser-config-repo
+      REMOTE_CONFIG_REPO_URL: https://github.com/Consolefire/xpenser-config-repo
+    depends_on:
+      - cloud-discovery-01
+      - cloud-discovery-02
+      - cloud-discovery-03
+
+  config-server-02:
+    image: consolefire.com/spring-cloud-infra/config-server:1.0.0-SNAPSHOT_jdk24
+    hostname: config-server-02
+    container_name: config-server-02
+    networks:
+      - xpenser_cloud_infra_net
+    ports:
+      - "8661:8690"
+    volumes:
+      - ./configs/config-repo:/etc/application/config/
+      - /Users/sdas/repository/consolefire/xpenser-config-repo:/etc/application/config-repo/xpenser-config-repo
+    environment:
+      APPLICATION_NAME: config-server
+      DISCOVERY_SERVER_URL: http://cloud-discovery-01:8760/eureka/,http://cloud-discovery-02:8760/eureka/,http://cloud-discovery-03:8760/eureka/
+      SPRING_PROFILES_ACTIVE: remote
+      NATIVE_CONFIG_REPO_PATH: /etc/application/config-repo/xpenser-config-repo
+      REMOTE_CONFIG_REPO_URL: https://github.com/Consolefire/xpenser-config-repo
+    depends_on:
+      - cloud-discovery-01
+      - cloud-discovery-02
+      - cloud-discovery-03
+
+  # Nginx Proxy Service (Now also connected to data network and proxying DB)
+  nginx-proxy:
+    image: nginx:latest
+    container_name: nginx-proxy
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - xpenser_cloud_infra_net
+      - xpenser_gateway_net
+      - xpenser_auth_net
+      - xpenser_data_net # NEW: Connected to data network to reach postgres-db
+    ports:
+      - "80:80"     # For HTTP/HTTPS traffic
+      - "5432:5432" # NEW: For PostgreSQL TCP traffic (Host:Container)
+    depends_on:
+      - cloud-discovery-01
+      - config-server-01
+      - xpenser-api-gateway-01
+      - xpenser-auth-server-01
+      - xpenser-user-service-01
+      - postgres-db # Ensure DB is up before Nginx tries to proxy it
+
+
+  # API Gateway Service
+  xpenser-api-gateway-01:
+    restart: on-failure
+    image: consolefire.com/spring-cloud-infra/api-gateway:0.0.1-SNAPSHOT_jdk24
+    hostname: xpenser-api-gateway-01
+    container_name: xpenser-api-gateway-01
+    networks:
+      - xpenser_gateway_net
+    ports:
+      - "8900:8900"
+    environment:
+      DISCOVERY_ENABLED: true
+      DISCOVERY_SERVER_URL: http://nginx-proxy:80/discovery/,http://nginx-proxy:80/discovery/,http://nginx-proxy:80/discovery/
+      DISCOVERY_INSTANCE_HOSTNAME: xpenser-api-gateway-01
+      CONFIG_SERVER_URL: http://nginx-proxy:80/config/
+      CONFIG_REPO_BRANCH_NAME: main
+      GATEWAY_SERVER_PORT: 8900
+      SPRING_APPLICATION_NAME: xpenser-api-gateway
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      - cloud-discovery-01
+      - config-server-01
+
+  # Auth Server Service
+  xpenser-auth-server-01:
+    restart: on-failure
+    image: consolefire.com/spring-cloud-infra/authorization-server:0.0.1-SNAPSHOT_jdk24
+    hostname: xpenser-auth-server-01
+    container_name: xpenser-auth-server-01
+    networks:
+      - xpenser_auth_net
+    ports:
+      - "9000:9000"
+    environment:
+      DISCOVERY_ENABLED: true
+      DISCOVERY_SERVER_URL: http://nginx-proxy:80/discovery/,http://nginx-proxy:80/discovery/,http://nginx-proxy:80/discovery/
+      DISCOVERY_INSTANCE_HOSTNAME: xpenser-auth-server-01
+      CONFIG_SERVER_URL: http://nginx-proxy:80/config/
+      CONFIG_REPO_BRANCH_NAME: main
+      AUTH_SERVER_PORT: 9000
+      SPRING_APPLICATION_NAME: xpenser-auth-server
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      - cloud-discovery-01
+      - config-server-01
+
+  # PostgreSQL Database Service
+  postgres-db:
+    image: postgres:17
+    restart: always
+    container_name: postgres-db
+    shm_size: 1Gb
+    networks:
+      - xpenser_data_net # Remains only on the data network
+    # NO DIRECT HOST PORT EXPOSURE FOR DB NOW, AS NGINX WILL HANDLE IT
+    # If you still want direct host access for tooling, you could keep a different port like 15432:5432
+    # ports:
+    #   - "15432:5432"
+    volumes:
+      - xpenser-postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: peterpan
+      POSTGRES_PASSWORD: P3terP@n
+      POSTGRES_DB: neverland
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+
+
+  # User Service (No longer dual-homed to data network for DB access, relies on Nginx proxy)
+  xpenser-user-service-01:
+    restart: on-failure
+    image: consolefire.com/spring-cloud-infra/user-service:0.0.1-SNAPSHOT_jdk24
+    hostname: xpenser-user-service-01
+    container_name: xpenser-user-service-01
+    networks:
+      - xpenser_auth_net # Only on its primary network
+      # Removed xpenser_data_net here, as DB access is now via nginx-proxy
+    ports:
+      - "9100:9100"
+    environment:
+      DISCOVERY_ENABLED: true
+      DISCOVERY_SERVER_URL: http://nginx-proxy:80/discovery/,http://nginx-proxy:80/discovery/,http://nginx-proxy:80/discovery/
+      DISCOVERY_INSTANCE_HOSTNAME: xpenser-user-service-01
+      CONFIG_SERVER_URL: http://nginx-proxy:80/config/
+      CONFIG_REPO_BRANCH_NAME: main
+      USER_SERVICE_PORT: 9100
+      SPRING_APPLICATION_NAME: xpenser-user-service
+      SPRING_PROFILES_ACTIVE: dev
+      # --- IMPORTANT CHANGE FOR DATABASE URL ---
+      # Now points to the Nginx proxy service and the port Nginx is listening on for PostgreSQL
+      SPRING_DATASOURCE_URL: jdbc:postgresql://nginx-proxy:5432/neverland
+      SPRING_DATASOURCE_USERNAME: peterpan
+      SPRING_DATASOURCE_PASSWORD: P3terP@n
+    depends_on:
+      - cloud-discovery-01
+      - config-server-01
+      - nginx-proxy # User service depends on the Nginx proxy to be up for DB and infra access

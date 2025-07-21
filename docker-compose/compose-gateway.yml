@@ -1,0 +1,16 @@
+name: xpenser-cloud-gateway
+
+services:
+  xpenser-api-gateway-01:
+    image: consolefire.com/spring-cloud-infra/api-gateway:0.0.1-SNAPSHOT_jdk24
+    hostname: xpenser-api-gateway-01
+    ports:
+      - 8900:8080
+    environment:
+      DISCOVERY_ENABLED: true
+      DISCOVERY_SERVER_URL: http://cloud-discovery-01:8760/eureka/,http://cloud-discovery-02:8760/eureka/,http://cloud-discovery-03:8760/eureka/
+      DISCOVERY_INSTANCE_HOSTNAME: xpenser-api-gateway-01
+      CONFIG_SERVER_URL: http://config-server-01:8690/,http://config-server-01:8690/
+      CONFIG_REPO_BRANCH_NAME: main
+      SPRING_APPLICATION_NAME: xpenser-api-gateway
+      SPRING_PROFILES_ACTIVE: dev

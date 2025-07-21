@@ -1,0 +1,40 @@
+server:
+  port: ${CONFIG_SERVER_PORT:8690}
+
+spring:
+  application:
+    name: ${APPLICATION_NAME:xpenser-config-server}
+  cloud:
+    config:
+      name: xpenser-config-service
+      server:
+        accept-empty: false
+        git:
+          default-label: ${GIT_DEFAULT_BRANCH_NAME:main}
+          skipSslValidation: true
+          timeout: 4
+          uri: https://github.com/Consolefire/cloud-config-repo
+          repos:
+            xpenser:
+              uri: https://github.com/Consolefire/cloud-config-repo
+              pattern: xpenser*
+              search-paths:
+                - /xpenser/{application}/
+            account:
+              uri: https://github.com/Consolefire/cloud-config-repo
+              pattern: account*
+              search-paths:
+                - /account/{application}/
+
+
+
+
+#        git:
+#          default-label: ${GIT_DEFAULT_BRANCH_NAME:main}
+#          skipSslValidation: true
+#          timeout: 4
+#          uri: https://github.com/Consolefire/xpenser-config-repo
+#          search-paths:
+#            - /{application}/
+#            - /{application}/{profile}/
+

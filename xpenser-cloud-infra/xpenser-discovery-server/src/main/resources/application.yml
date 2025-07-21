@@ -1,0 +1,10 @@
+spring:
+  freemarker:
+    template-loader-path: classpath:/templates/
+    prefer-file-system-access: false
+eureka:
+  instance:
+    preferIpAddress: ${EUREKA_PREFER_IP_ADDRESS:true}
+  client:
+    register-with-eureka: false
+    fetch-registry: false
