@@ -4,7 +4,6 @@ import com.consolefire.xpenser.cloud.user.data.dto.AdminUserUpdateRequestDto;
 import com.consolefire.xpenser.cloud.user.data.dto.UserRegistrationRequestDto;
 import com.consolefire.xpenser.cloud.user.data.dto.UserResponseDto;
 import com.consolefire.xpenser.cloud.user.data.dto.UserUpdateRequestDto;
-import com.consolefire.xpenser.cloud.user.data.entity.Role;
 import com.consolefire.xpenser.cloud.user.data.entity.User;
 import com.consolefire.xpenser.cloud.user.data.mapper.UserMapper;
 import com.consolefire.xpenser.cloud.user.data.repository.RoleRepository;
@@ -13,177 +12,228 @@ import com.consolefire.xpenser.cloud.user.service.UserService;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Set;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
-@RequiredArgsConstructor
-public class UserServiceImpl implements UserService, ReactiveUserDetailsService {
+public class UserServiceImpl implements UserService, UserDetailsService, ReactiveUserDetailsService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    @Override
-    public Mono<UserResponseDto> registerUser(UserRegistrationRequestDto request) {
-        return userRepository.findByUsername(request.getUsername())
-            .flatMap(u -> Mono.<UserResponseDto>error(new ResponseStatusException(HttpStatus.CONFLICT,
-                "Username already exists"))) // Explicitly cast the error Mono's type
-            .switchIfEmpty(Mono.defer(() -> userRepository.findByEmail(request.getEmail())
-                    .flatMap(u -> Mono.<UserResponseDto>error(
-                        new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists"))))
-                // Explicitly cast the error Mono's type
-            )
-            .switchIfEmpty(Mono.defer(() ->
-                roleRepository.findByName("ROLE_USER")
-                    .switchIfEmpty(Mono.<Role>error( // Cast this error Mono as well
-                        new IllegalStateException("Default role 'ROLE_USER' not found. Please ensure it's seeded.")))
-                    .flatMap(defaultRole -> {
-                        User newUser = userMapper.toEntity(request);
-                        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-                        newUser.setRoles(Collections.singleton(defaultRole));
-                        newUser.setCreatedAt(Instant.now());
-                        newUser.setUpdatedAt(Instant.now());
-                        return userRepository.save(newUser)
-                            .flatMap(this::fetchUserWithRolesAndPrivileges) // Returns Mono<User>
-                            .map(userMapper::toDto); // Returns Mono<UserResponseDto>
-                    })
-            ));
+    public UserServiceImpl(UserRepository userRepository,
+        RoleRepository roleRepository,
+        UserMapper userMapper,
+        PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
-
+    // --- UserDetailsService Implementation (Blocking) ---
     @Override
-    @PreAuthorize("#userId == authentication.principal.id")
-    public Mono<UserResponseDto> updateUserData(Long userId, UserUpdateRequestDto request) {
-        return userRepository.findById(userId)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
-            .flatMap(user -> {
-                // This variable will hold the Mono<User> result of the email uniqueness check and update/save flow
-                Mono<User> updateAndSaveMono;
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-                if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
-                    // If email is changing, check for uniqueness in a reactive chain
-                    updateAndSaveMono = userRepository.findByEmail(request.getEmail())
-                        // If an existing user is found with the new email, throw a conflict error
-                        .flatMap(existingUser -> Mono.<User>error( // <-- FIX: Explicitly cast Mono.error to Mono<User>
-                            new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use")))
-                        // If findByEmail returns empty (email is unique), proceed with the update and save
-                        .switchIfEmpty(Mono.defer(() -> {
-                            userMapper.updateFromDto(request, user); // Apply updates from DTO to entity
-                            user.setUpdatedAt(Instant.now()); // Update timestamp
-                            return userRepository.save(user); // Save the updated user
-                        }));
-                } else {
-                    // If email is not changing or is null, just proceed with updating other fields and saving
-                    userMapper.updateFromDto(request, user); // Apply updates from DTO to entity
-                    user.setUpdatedAt(Instant.now()); // Update timestamp
-                    updateAndSaveMono = userRepository.save(user); // Save the user
-                }
-                return updateAndSaveMono; // Return the result of the chosen update/save path
-            })
-            .flatMap(
-                this::fetchUserWithRolesAndPrivileges) // After saving, fetch full user data including roles/privileges
-            .map(userMapper::toDto); // Map the fully loaded User entity to a UserResponseDto
+        List<com.consolefire.xpenser.cloud.user.data.entity.Role> roles = roleRepository.findRolesByUserId(
+            user.getId());
+        user.setRoles(new HashSet<>(roles));
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        user.getRoles().forEach(role -> {
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            List<com.consolefire.xpenser.cloud.user.data.entity.Privilege> privileges = roleRepository.findPrivilegesByRoleId(
+                role.getId());
+            role.setPrivileges(new HashSet<>(privileges));
+            privileges.forEach(privilege -> authorities.add(new SimpleGrantedAuthority(privilege.getName())));
+        });
+
+        return new org.springframework.security.core.userdetails.User(
+            user.getUsername(),
+            user.getPassword(),
+            user.isEnabled(),
+            user.isAccountNonExpired(),
+            user.isCredentialsNonExpired(),
+            user.isAccountNonLocked(),
+            authorities
+        );
     }
 
-    @Override
-    public Mono<UserResponseDto> getUserById(Long userId) {
-        return userRepository.findById(userId)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
-            .flatMap(this::fetchUserWithRolesAndPrivileges)
-            .map(userMapper::toDto);
-    }
-
-    // --- ReactiveUserDetailsService Implementation ---
-    @Override
+    // --- New Reactive UserDetails Loading Method ---
+    // This method is now part of your service for reactive consumers
+    @Transactional(readOnly = true) // Apply transactional as it's a read operation
     public Mono<UserDetails> findByUsername(String username) {
-        return userRepository.findByUsername(username)
-            .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found: " + username)))
-            .flatMap(this::fetchUserWithRolesAndPrivileges) // Fetch roles and privileges here
-            .cast(UserDetails.class); // Cast to UserDetails
+        // Wrap the blocking loadUserByUsername call in a Mono and offload to boundedElastic scheduler.
+        // This makes the blocking UserDetailsService.loadUserByUsername available reactively.
+        return Mono.defer(() -> Mono.fromCallable(() -> loadUserByUsername(username)))
+            .subscribeOn(Schedulers.boundedElastic())
+            .onErrorMap(UsernameNotFoundException.class,
+                ex -> new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage()));
+        // Convert Spring Security's specific exception to a WebFlux friendly one
     }
 
-    // --- Admin Service Functions ---
+    // --- Existing UserService Interface Implementations (from previous responses) ---
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public Mono<Void> deleteUser(Long userId) {
-        return userRepository.findById(userId)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
-            .flatMap(user -> {
-                if (user.getRoles().stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getName()))) {
-                    return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "Cannot delete an ADMIN user via this endpoint."));
+    @Transactional
+    public Mono<UserResponseDto> createUser(UserRegistrationRequestDto request) {
+        return Mono.defer(() -> Mono.fromCallable(() -> {
+                if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
                 }
-                return userRepository.delete(user);
-            });
-    }
-
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public Mono<UserResponseDto> updateUserStatus(Long userId, AdminUserUpdateRequestDto request) {
-        return userRepository.findById(userId)
-            .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
-            .flatMap(user -> {
-                if (user.getRoles().stream().anyMatch(role -> "ROLE_ADMIN".equals(role.getName())) &&
-                    (Boolean.FALSE.equals(request.getEnabled()) || Boolean.FALSE.equals(
-                        request.getAccountNonLocked()))) {
-                    return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN,
-                        "Cannot deactivate or lock an ADMIN user via this endpoint."));
+                if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
                 }
-
-                user.setEnabled(request.getEnabled());
-                user.setAccountNonExpired(request.getAccountNonExpired());
-                user.setCredentialsNonExpired(request.getCredentialsNonExpired());
-                user.setAccountNonLocked(request.getAccountNonLocked());
-                user.setUpdatedAt(Instant.now());
-                return userRepository.save(user);
-            })
+                return roleRepository.findByName("ROLE_USER")
+                    .orElseThrow(
+                        () -> new IllegalStateException("Default role 'ROLE_USER' not found. Please ensure it's seeded."));
+            }))
+            .flatMap(defaultRole -> Mono.fromCallable(() -> {
+                User newUser = userMapper.toEntity(request);
+                newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+                newUser.setRoles(Collections.singleton(defaultRole));
+                newUser.setCreatedAt(Instant.now());
+                newUser.setUpdatedAt(Instant.now());
+                return userRepository.save(newUser);
+            }))
             .flatMap(this::fetchUserWithRolesAndPrivileges)
-            .map(userMapper::toDto);
+            .map(userMapper::toDto)
+            .subscribeOn(Schedulers.boundedElastic());
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public Flux<UserResponseDto> getAllUsers() {
-        return userRepository.findAll()
-            .flatMap(this::fetchUserWithRolesAndPrivileges) // Fetch roles and privileges for each user
-            .map(o -> {
-                System.out.println("%%%%% --- " + o);
-                return o;
-            })
-            .map(userMapper::toDto);
+    @Transactional
+    public Mono<UserResponseDto> updateUserData(Long userId, UserUpdateRequestDto request) {
+        return Mono.defer(() -> Mono.fromCallable(() -> {
+                User existingUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+                existingUser.setFirstName(request.getFirstName());
+                existingUser.setLastName(request.getLastName());
+                existingUser.setUpdatedAt(Instant.now());
+
+                if (request.getEmail() != null && !request.getEmail().equals(existingUser.getEmail())) {
+                    userRepository.findByEmail(request.getEmail()).ifPresent(u -> {
+                        if (!u.getId().equals(userId)) {
+                            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+                        }
+                    });
+                    existingUser.setEmail(request.getEmail());
+                }
+
+                return userRepository.save(existingUser);
+            }))
+            .flatMap(this::fetchUserWithRolesAndPrivileges)
+            .map(userMapper::toDto)
+            .subscribeOn(Schedulers.boundedElastic());
     }
 
-    // --- Helper method to fetch roles and privileges for a User entity ---
+
+    @Override
+    @Transactional(readOnly = true)
+    public Mono<UserResponseDto> getUserById(Long userId) {
+        return Mono.defer(() -> Mono.fromCallable(() ->
+                userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"))
+            ))
+            .flatMap(this::fetchUserWithRolesAndPrivileges)
+            .map(userMapper::toDto)
+            .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @Override
+    @Transactional
+    public Mono<Void> deleteUser(Long userId) {
+        return Mono.defer(() -> Mono.fromRunnable(() -> {
+                if (!userRepository.existsById(userId)) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+                }
+                userRepository.deleteById(userId);
+            }))
+            .then()
+            .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @Override
+    @Transactional
+    public Mono<UserResponseDto> updateUserStatus(Long userId, AdminUserUpdateRequestDto request) {
+        return Mono.defer(() -> Mono.fromCallable(() -> {
+                User existingUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+                if (request.getEnabled() != null) {
+                    existingUser.setEnabled(request.getEnabled());
+                }
+                if (request.getAccountNonExpired() != null) {
+                    existingUser.setAccountNonExpired(request.getAccountNonExpired());
+                }
+                if (request.getCredentialsNonExpired() != null) {
+                    existingUser.setCredentialsNonExpired(request.getCredentialsNonExpired());
+                }
+                if (request.getAccountNonLocked() != null) {
+                    existingUser.setAccountNonLocked(request.getAccountNonLocked());
+                }
+
+                if (request.getRoles() != null && !request.getRoles().isEmpty()) {
+                    Set<com.consolefire.xpenser.cloud.user.data.entity.Role> newRoles = new HashSet<>();
+                    for (String roleName : request.getRoles()) {
+                        newRoles.add(roleRepository.findByName(roleName)
+                            .orElseThrow(
+                                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role not found: " + roleName)));
+                    }
+                    existingUser.setRoles(newRoles);
+                }
+
+                existingUser.setUpdatedAt(Instant.now());
+                return userRepository.save(existingUser);
+            }))
+            .flatMap(this::fetchUserWithRolesAndPrivileges)
+            .map(userMapper::toDto)
+            .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Flux<UserResponseDto> getAllUsers() {
+        return Flux.defer(() -> Flux.fromIterable(userRepository.findAll()))
+            .flatMap(this::fetchUserWithRolesAndPrivileges)
+            .map(userMapper::toDto)
+            .subscribeOn(Schedulers.boundedElastic());
+    }
+
     private Mono<User> fetchUserWithRolesAndPrivileges(User user) {
-        return Mono.just(user)
-            .flatMap(u -> {
-                // Fetch roles and privileges
-                return roleRepository.findRolesByUserId(u.getId())
-                    .collectList()
-                    .flatMap(roles -> {
-                        u.setRoles(new HashSet<>(roles));
-                        return Flux.fromIterable(roles)
-                            .flatMap(r -> roleRepository.findPrivilegesByRoleId(r.getId()))
-                            .collectList();
-                    })
-                    .map(privileges -> {
-                        // Assume User has a setPrivileges method, or add to a dummy roleset
-                        u.getRoles().forEach(role -> role.setPrivileges(
-                            new HashSet<>(privileges))); // Simplified, real logic might be more nuanced
-                        return u;
-                    });
-            });
+        return Mono.defer(() -> Mono.just(user))
+            .flatMap(u -> Mono.fromCallable(() -> {
+                Set<com.consolefire.xpenser.cloud.user.data.entity.Role> roles = new HashSet<>(
+                    roleRepository.findRolesByUserId(u.getId()));
+                u.setRoles(roles);
+
+                roles.forEach(role -> {
+                    List<com.consolefire.xpenser.cloud.user.data.entity.Privilege> privileges = roleRepository.findPrivilegesByRoleId(
+                        role.getId());
+                    role.setPrivileges(new HashSet<>(privileges));
+                });
+                return u;
+            }))
+            .subscribeOn(Schedulers.boundedElastic());
     }
 }

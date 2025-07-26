@@ -1,10 +1,11 @@
 package com.consolefire.xpenser.cloud.user;
 
+import com.consolefire.xpenser.cloud.user.config.props.CommonApplicationProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@EnableR2dbcRepositories("com.consolefire.xpenser.cloud.user.data.repository")
+@EnableConfigurationProperties({CommonApplicationProperties.class})
 @SpringBootApplication(scanBasePackages = {"com.consolefire.xpenser.cloud.user"})
 public class UserServiceApplication {
 

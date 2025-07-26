@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL, -- Store hashed passwords (e.g., BCrypt, up to 60 for BCrypt, but 255 is safe for future algorithms)
@@ -16,14 +16,14 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX idx_users_username ON users (username);
 CREATE INDEX idx_users_email ON users (email);
 
-CREATE IF NOT EXISTS TABLE roles (
+CREATE TABLE roles (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE -- E.g., 'ROLE_USER', 'ROLE_ADMIN'
 );
 
 CREATE INDEX idx_roles_name ON roles (name);
 
-CREATE TABLE IF NOT EXISTS user_roles (
+CREATE TABLE user_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
     PRIMARY KEY (user_id, role_id),
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS user_roles (
 CREATE INDEX idx_user_roles_user_id ON user_roles (user_id);
 CREATE INDEX idx_user_roles_role_id ON user_roles (role_id);
 
-CREATE TABLE IF NOT EXISTS privileges (
+CREATE TABLE privileges (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE -- E.g., 'READ_USERS', 'WRITE_PRODUCTS', 'DELETE_ANY_ITEM'
 );
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS privileges (
 CREATE INDEX idx_privileges_name ON privileges (name);
 
 
-CREATE TABLE IF NOT EXISTS role_privileges (
+CREATE TABLE role_privileges (
     role_id BIGINT NOT NULL,
     privilege_id BIGINT NOT NULL,
     PRIMARY KEY (role_id, privilege_id),

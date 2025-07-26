@@ -1,0 +1,7 @@
+#!/bin/bash
+
+SPRING_PROFILES_ACTIVE=dev \
+SPRING_APPLICATION_NAME=xpenser-auth-server \
+DB_HOST=localhost DB_PORT=15432 DB_SERVER_NAME=neverland \
+DB_USER=peterpan DB_PASSWORD=P3terP@n DB_SCHEMA=xpenser_auth_server \
+java -jar target/authorization-server-0.0.1-SNAPSHOT.jar

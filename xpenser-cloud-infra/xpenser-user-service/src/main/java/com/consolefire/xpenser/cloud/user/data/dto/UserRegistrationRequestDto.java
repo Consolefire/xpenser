@@ -3,11 +3,17 @@ package com.consolefire.xpenser.cloud.user.data.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
 @Data
 @Builder
+@Jacksonized
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRegistrationRequestDto {
 
     @NotBlank(message = "Username is required")

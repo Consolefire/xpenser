@@ -1,5 +1,11 @@
 package com.consolefire.xpenser.cloud.user.data.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -8,11 +14,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
 
-@Table("roles")
+@Entity
+@Table(name = "roles")
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,11 +26,12 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Role {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
 
-    @Transient // R2DBC does not automatically map many-to-many. Fetch separately.
+    @OneToMany
     private Set<Privilege> privileges = new HashSet<>();
 
     public Role(String name) {

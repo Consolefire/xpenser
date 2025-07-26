@@ -1,12 +1,12 @@
 package com.consolefire.xpenser.cloud.user.data.repository;
 
 import com.consolefire.xpenser.cloud.user.data.entity.Privilege;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Mono;
 
 @Repository
-public interface PrivilegeRepository extends ReactiveCrudRepository<Privilege, Long> {
+public interface PrivilegeRepository extends JpaRepository<Privilege, Long> {
 
-    Mono<Privilege> findByName(String name);
+    Optional<Privilege> findByName(String name);
 }

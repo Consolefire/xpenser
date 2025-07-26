@@ -76,6 +76,8 @@ services:
       - cloud-discovery-01
       - cloud-discovery-02
       - cloud-discovery-03
+    depends_on:
+      - config-server-01
     ports:
       - 8661:8690
     volumes:

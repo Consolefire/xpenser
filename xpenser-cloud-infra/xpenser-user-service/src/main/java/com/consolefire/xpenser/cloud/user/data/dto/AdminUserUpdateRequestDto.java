@@ -1,6 +1,7 @@
 package com.consolefire.xpenser.cloud.user.data.dto;
 
 import jakarta.validation.constraints.NotNull;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,4 +20,7 @@ public class AdminUserUpdateRequestDto {
 
     @NotNull(message = "Account non-locked status is required")
     private Boolean accountNonLocked;
+
+    private Set<String> roles;
+
 }

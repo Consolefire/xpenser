@@ -15,7 +15,7 @@ spring:
   application:
     name: ${SPRING_APPLICATION_NAME:xpenser-user-service}
   config:
-    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
+    import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
   cloud:
     config:
       uri: ${CONFIG_SERVER_URL:http://localhost:8888/}

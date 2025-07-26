@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 
 public interface UserService {
 
-    Mono<UserResponseDto> registerUser(UserRegistrationRequestDto request);
+    Mono<UserResponseDto> createUser(UserRegistrationRequestDto request);
 
     Mono<UserResponseDto> updateUserData(Long userId, UserUpdateRequestDto request);
 

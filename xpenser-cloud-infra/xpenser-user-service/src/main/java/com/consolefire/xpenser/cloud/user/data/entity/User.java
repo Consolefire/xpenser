@@ -1,5 +1,11 @@
 package com.consolefire.xpenser.cloud.user.data.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,23 +16,22 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Table("users")
+@Entity
+@Table(name = "users")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "username")
-@ToString(exclude = "roles")
+@ToString//(exclude = "roles")
 public class User implements UserDetails {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String username;
@@ -41,7 +46,7 @@ public class User implements UserDetails {
     private Instant createdAt = Instant.now();
     private Instant updatedAt = Instant.now();
 
-    @Transient // R2DBC does not automatically map many-to-many. Fetch separately.
+    @ManyToMany
     private Set<Role> roles = new HashSet<>();
 
     public User(String username, String password, String email, String firstName, String lastName, Set<Role> roles) {

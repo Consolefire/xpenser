@@ -1,0 +1,8 @@
+#!/bin/bash
+
+SPRING_APPLICATION_NAME=xpenser-user-service \
+DB_HOST=localhost DB_PORT=15432 DB_SERVER_NAME=neverland \
+DB_USER=peterpan DB_PASSWORD=P3terP@n DB_SCHEMA=xpenser_user_service \
+DISCOVERY_SERVER_URL=http://localhost:8761/eureka/,http://localhost:8762/eureka/,http://localhost:8763/eureka/ \
+CONFIG_SERVER_URL=http://localhost:8660/ \
+mvn spring-boot:run -Dspring-boot.run.profiles=NO_AUTH,dev
