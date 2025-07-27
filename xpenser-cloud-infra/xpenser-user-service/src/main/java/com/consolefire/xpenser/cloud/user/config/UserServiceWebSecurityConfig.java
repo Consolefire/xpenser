@@ -44,7 +44,6 @@ public class UserServiceWebSecurityConfig {
             return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable) // Disable CSRF for API-only service
                 .authorizeExchange(authorize -> authorize
-                    .pathMatchers("/users/register").permitAll() // Allow public registration
                     .pathMatchers("/actuator/**").permitAll() // For health checks etc.
                     .pathMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN role can access /admin endpoints
                     .anyExchange().authenticated() // All other requests require authentication

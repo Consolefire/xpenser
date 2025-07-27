@@ -1,0 +1,30 @@
+meta {
+  name: Onboard User
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://{{user-service.host}}:{{user-service.port}}/admin-center/users/onboard
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: Admin@L0calH0$t
+}
+
+body:json {
+  {
+    "username": "u001",
+    "password": "p12345678",
+    "email": "u001@localhost.com",
+    "firstName": "User",
+    "lastName": "001"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

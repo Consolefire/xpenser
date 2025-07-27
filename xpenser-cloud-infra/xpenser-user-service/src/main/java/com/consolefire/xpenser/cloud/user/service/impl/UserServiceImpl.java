@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -94,7 +95,7 @@ public class UserServiceImpl implements UserService, UserDetailsService, Reactiv
     // --- Existing UserService Interface Implementations (from previous responses) ---
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Mono<UserResponseDto> createUser(UserRegistrationRequestDto request) {
         return Mono.defer(() -> Mono.fromCallable(() -> {
                 if (userRepository.findByUsername(request.getUsername()).isPresent()) {

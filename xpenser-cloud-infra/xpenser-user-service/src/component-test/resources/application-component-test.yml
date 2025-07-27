@@ -1,45 +1,11 @@
-commons:
-  infra:
-    database:
-      postgresql:
-        driver-class-name: org.postgresql.Driver
-        host: ${DB_HOST:localhost}
-        port: ${DB_PORT:5432}
-        database-name: ${DB_SERVER_NAME:neverland}
-        username: ${DB_USER:peterpan}
-        password: ${DB_PASSWORD:P3terP@n}
-        schema: ${DB_SCHEMA:xpenser_user_service}
-        driver-options:
-          k: validate
-
-        pool: # Connection pool for R2DBC (e.g., r2dbc-pool)
-          name: PG_POOL
-          max-size: 10
-          initial-size: 5
-          max-idle-time: 30m
-          validation-query: SELECT 1
-          # Other pool properties as needed
-
-
-eureka:
-  client:
-    enabled: false
+k: kkkk
 
 spring:
-  config:
-    import: optional:configserver
-  cloud:
-    config:
-      enabled: false
-
-  r2dbc: # Reactive database connection for WebFlux
-    # No driver-class-name needed for R2DBC
-    pool: # Connection pool for R2DBC (e.g., r2dbc-pool)
-      max-size: 10
-      initial-size: 5
-      max-idle-time: 30m
-      validation-query: SELECT 1
-      # Other pool properties as needed
-
-  flyway: # Flyway still manages schema, even for R2DBC
-    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: none # or create, create-drop, none
+    show-sql: true # Log SQL statements
+    properties:
+      hibernate:
+        format_sql: true # Format SQL logs for readability
+        dialect: org.hibernate.dialect.PostgreSQLDialect # Your specific database dialect

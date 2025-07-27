@@ -2,11 +2,15 @@ package com.consolefire.xpenser.cloud.user.data.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AdminUserUpdateRequestDto {
 
     @NotNull(message = "Enabled status is required")

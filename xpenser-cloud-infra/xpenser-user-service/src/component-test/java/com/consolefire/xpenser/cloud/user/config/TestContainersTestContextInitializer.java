@@ -5,13 +5,14 @@ import static java.lang.String.format;
 import com.consolefire.xpenser.cloud.user.utils.MapBuilder;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -38,9 +39,6 @@ public class TestContainersTestContextInitializer implements
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
-        ConfigurableEnvironment environment = applicationContext.getEnvironment();
-        String url = format("r2dbc:postgresql://%s:%d/%s", TC_POSTGRES_DB.getHost(),
-            TC_POSTGRES_DB.getFirstMappedPort(), TC_POSTGRES_DB.getDatabaseName());
         Map<String, Object> proprtiesMap = MapBuilder.<String, Object>builder()
             .forKey("spring.cloud.config.enabled").withValue(false)
             .forKey("eureka.client.enabled").withValue(false)
@@ -58,8 +56,14 @@ public class TestContainersTestContextInitializer implements
 
         System.out.println(proprtiesMap);
 
-        environment.getPropertySources().addFirst(new MapPropertySource("all-test-properties", proprtiesMap));
-        TestPropertySourceUtils
-            .convertInlinedPropertiesToMap();
+        String[] propertiesArray = proprtiesMap.entrySet().stream()
+            .map(e -> {
+                String s = format("%s=%s", e.getKey(), Optional.ofNullable(e.getValue()).map(String::valueOf).orElse(""));
+                return s;
+            })
+            .collect(Collectors.toSet())
+            .toArray(new String[]{});
+
+        TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext, propertiesArray);
     }
 }
