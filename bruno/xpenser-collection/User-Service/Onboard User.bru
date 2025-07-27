@@ -11,15 +11,15 @@ post {
 }
 
 auth:basic {
-  username: admin
-  password: Admin@L0calH0$t
+  username: {{user-service.admin.username}}
+  password: {{user-service.admin.password}}
 }
 
 body:json {
   {
-    "username": "u001",
-    "password": "p12345678",
-    "email": "u001@localhost.com",
+    "username": "u003",
+    "password": "User@L0calH0$t",
+    "email": "u003@localhost.com",
     "firstName": "User",
     "lastName": "001"
   }
