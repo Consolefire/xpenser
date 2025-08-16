@@ -1,0 +1,15 @@
+meta {
+  name: Update Receipt
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://{{expense-service.host}}:{{expense-service.port}}/receipts
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

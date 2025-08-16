@@ -38,3 +38,9 @@ spring:
 
   flyway:
     enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    url: ${spring.datasource.url}
+    user: ${common.infra.db.username}
+    password: ${common.infra.db.password}
+    default-schema: ${common.infra.db.default-schema}

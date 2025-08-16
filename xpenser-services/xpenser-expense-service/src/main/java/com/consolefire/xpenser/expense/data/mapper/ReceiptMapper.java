@@ -1,7 +1,8 @@
 package com.consolefire.xpenser.expense.data.mapper;
 
 import com.consolefire.xpenser.expense.data.dto.request.ReceiptRequestDto;
-import com.consolefire.xpenser.expense.data.dto.response.ReceiptResponseDto;
+import com.consolefire.xpenser.expense.data.dto.response.ReceiptCreateResponseDto;
+import com.consolefire.xpenser.expense.data.dto.response.ReceiptDetailResponseDto;
 import com.consolefire.xpenser.expense.data.entiry.ReceiptEntity;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(
     uses = {PaymentMapper.class, ItemMapper.class}
@@ -37,13 +39,15 @@ public interface ReceiptMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "generatedAt", source = "timestamp")
-    @Mapping(target = "metadata", source = "metadata", conditionQualifiedByName = "ifNullThenEmptyMap")
-    @Mapping(target = "total", source = "total")
-    @Mapping(target = "currency", source = "currency")
-    @Mapping(target = "payment", source = "payment")
-    @Mapping(target = "items", source = "items")
+    @Mapping(target = "metadata", source = "metadata", conditionQualifiedByName = "ifNullThenEmptyMap", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "total", source = "total", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "currency", source = "currency", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "payment", source = "payment", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "items", source = "items", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntityFromDto(ReceiptRequestDto dto, @MappingTarget ReceiptEntity entity);
 
+    @Mapping(source = "id", target = "receiptId")
+    ReceiptDetailResponseDto fromEntityToReceiptDetailResponseDto(ReceiptEntity entity);
 
     default <K, V> Map<K, V> ifNullThenEmptyMap(Map<K, V> data) {
         return data == null ? Collections.emptyMap() : data;
@@ -70,5 +74,5 @@ public interface ReceiptMapper {
     @Mapping(target = "receiptId", source = "id")
     @Mapping(target = "identifier", source = "identifier")
     @Mapping(target = "createdAt", source = "createdAt")
-    ReceiptResponseDto toResponseDto(ReceiptEntity entity);
+    ReceiptCreateResponseDto toResponseDto(ReceiptEntity entity);
 }

@@ -12,7 +12,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString
 @Jacksonized
 @Builder
-public final class ReceiptResponseDto {
+public final class ReceiptCreateResponseDto {
 
     @JsonProperty("receiptId")
     private final Long receiptId;
@@ -22,5 +22,5 @@ public final class ReceiptResponseDto {
 
     @JsonProperty("createdAt")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss[.SSS]XXX", timezone = "UTC")
-    private final Instant createdAt; // Using Instant for creation timestamp
+    private final Instant createdAt;
 }

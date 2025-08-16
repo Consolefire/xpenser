@@ -2,7 +2,7 @@ package com.consolefire.xpenser.expense.web.api;
 
 import com.consolefire.xpenser.expense.data.dto.request.ReceiptRequestDto;
 import com.consolefire.xpenser.expense.data.dto.request.ReceiptUpdateRequestDto;
-import com.consolefire.xpenser.expense.data.dto.response.ReceiptResponseDto;
+import com.consolefire.xpenser.expense.data.dto.response.ReceiptCreateResponseDto;
 import com.consolefire.xpenser.expense.service.ReceiptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class ReceiptUpdateApiController {
 
     // POST: Create new Receipt
     @PostMapping
-    public ResponseEntity<ReceiptResponseDto> createReceipt(@RequestBody ReceiptRequestDto receiptRequestDto) {
+    public ResponseEntity<ReceiptCreateResponseDto> createReceipt(@RequestBody ReceiptRequestDto receiptRequestDto) {
         log.info("Creating a new receipt for identifier: {}, marketplace: {}, store: {}",
             receiptRequestDto.getIdentifier(), receiptRequestDto.getMarketPlaceCode(),
             receiptRequestDto.getStoreCode());
@@ -34,7 +34,7 @@ public class ReceiptUpdateApiController {
 
     // PUT: Update Receipt
     @PutMapping("/{marketPlaceCode}/{storeCode}/{identifier}")
-    public ResponseEntity<ReceiptResponseDto> updateReceipt(
+    public ResponseEntity<ReceiptCreateResponseDto> updateReceipt(
         @PathVariable(name = "marketPlaceCode") final String marketPlaceCode,
         @PathVariable(name = "storeCode") final String storeCode,
         @PathVariable(name = "identifier") final String identifier,

@@ -4,9 +4,9 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-import com.consolefire.xpenser.expense.ComponentTestConfiguration;
 import com.consolefire.xpenser.expense.data.dto.request.ReceiptRequestDto;
 import com.consolefire.xpenser.expense.data.dto.request.ReceiptUpdateRequestDto;
+import com.consolefire.xpenser.expense.tc.TestContainerDatabaseInitializer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
@@ -21,12 +21,14 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
-@Import(ComponentTestConfiguration.class)
+@ActiveProfiles({"ComponentTest", "TestContainerTests"})
 @TestInstance(Lifecycle.PER_CLASS)
+@ContextConfiguration(initializers = TestContainerDatabaseInitializer.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReceiptUpdateApiControllerComponentTest {
 

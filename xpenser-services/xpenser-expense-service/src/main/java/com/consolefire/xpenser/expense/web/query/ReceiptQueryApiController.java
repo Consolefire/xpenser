@@ -4,7 +4,7 @@ import static java.util.Optional.ofNullable;
 
 import com.consolefire.xpenser.expense.data.dto.query.QueryRequestDto;
 import com.consolefire.xpenser.expense.data.dto.query.ReceiptQueryProperties;
-import com.consolefire.xpenser.expense.data.dto.response.ReceiptResponseDto;
+import com.consolefire.xpenser.expense.data.dto.response.ReceiptDetailResponseDto;
 import com.consolefire.xpenser.expense.service.ReceiptQueryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class ReceiptQueryApiController {
     private final ReceiptQueryService receiptQueryService;
 
     @GetMapping("/{marketPlaceCode}/{storeCode}/{identifier}")
-    public ResponseEntity<ReceiptResponseDto> updateReceipt(
+    public ResponseEntity<ReceiptDetailResponseDto> fetchReceiptForMarketStoreAndIdentifier(
         @PathVariable(name = "marketPlaceCode") final String marketPlaceCode,
         @PathVariable(name = "storeCode") final String storeCode,
         @PathVariable(name = "identifier") final String identifier) {
@@ -46,7 +46,7 @@ public class ReceiptQueryApiController {
 
     // GET: All receipts >> returns List<ReceiptResponseDto>
     @GetMapping
-    public ResponseEntity<List<ReceiptResponseDto>> fetchAllReceipts() {
+    public ResponseEntity<List<ReceiptDetailResponseDto>> fetchAllReceipts() {
         log.info("Fetching all receipts with default query parameters");
         return ResponseEntity.ok(receiptQueryService.fetchAllReceipts(QueryRequestDto.DEFAULT));
     }

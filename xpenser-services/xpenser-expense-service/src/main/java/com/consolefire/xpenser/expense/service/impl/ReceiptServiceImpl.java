@@ -1,7 +1,7 @@
 package com.consolefire.xpenser.expense.service.impl;
 
 import com.consolefire.xpenser.expense.data.dto.request.ReceiptRequestDto;
-import com.consolefire.xpenser.expense.data.dto.response.ReceiptResponseDto;
+import com.consolefire.xpenser.expense.data.dto.response.ReceiptCreateResponseDto;
 import com.consolefire.xpenser.expense.data.entiry.ReceiptEntity;
 import com.consolefire.xpenser.expense.data.exceptions.DuplicateEntryExistsException;
 import com.consolefire.xpenser.expense.data.exceptions.EntryDoesNotExistsException;
@@ -26,7 +26,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ReceiptResponseDto createReceipt(ReceiptRequestDto receiptRequestDto) {
+    public ReceiptCreateResponseDto createReceipt(ReceiptRequestDto receiptRequestDto) {
         log.info("Attempting to create receipt for identifier: {}", receiptRequestDto.getIdentifier());
 
         Optional<ReceiptEntity> existingReceipt = receiptRepository.findByIdentifierAndMarketPlaceCodeAndStoreCode(
@@ -49,7 +49,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ReceiptResponseDto updateReceipt(ReceiptRequestDto receiptRequestDto) {
+    public ReceiptCreateResponseDto updateReceipt(ReceiptRequestDto receiptRequestDto) {
         log.info("Attempting to update receipt for identifier: {}", receiptRequestDto.getIdentifier());
 
         ReceiptEntity existingReceipt = receiptRepository.findByIdentifierAndMarketPlaceCodeAndStoreCode(

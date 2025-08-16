@@ -10,6 +10,7 @@ import com.consolefire.xpenser.store.data.entity.PaymentEntity;
 import com.consolefire.xpenser.store.data.entity.ReceiptEntity;
 import com.consolefire.xpenser.store.data.entity.TaxDetailEntity;
 import com.consolefire.xpenser.store.data.entity.TaxEntity;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -192,11 +193,12 @@ class ReceiptRepositoryTest implements PostgresTestcontainersTest { // Implement
     }
 
     @Test
+    @Transactional
     @DisplayName("Should find all receipts")
     void shouldFindAllReceipts() {
-        entityManager.persistAndFlush(createTestReceipt("TEST-ID-A", "MARKET-A", "STORE-1"));
-        entityManager.persistAndFlush(createTestReceipt("TEST-ID-B", "MARKET-B", "STORE-2"));
-        entityManager.persistAndFlush(createTestReceipt("TEST-ID-C", "MARKET-C", "STORE-3"));
+        receiptRepository.saveAndFlush(createTestReceipt("TEST-ID-A", "MARKET-A", "STORE-1"));
+        receiptRepository.saveAndFlush(createTestReceipt("TEST-ID-B", "MARKET-B", "STORE-2"));
+        receiptRepository.saveAndFlush(createTestReceipt("TEST-ID-C", "MARKET-C", "STORE-3"));
 
         List<ReceiptEntity> receipts = receiptRepository.findAll();
 

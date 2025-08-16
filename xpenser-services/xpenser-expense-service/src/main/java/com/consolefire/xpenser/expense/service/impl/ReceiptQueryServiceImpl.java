@@ -2,7 +2,7 @@ package com.consolefire.xpenser.expense.service.impl;
 
 import com.consolefire.xpenser.expense.data.dto.query.QueryRequestDto;
 import com.consolefire.xpenser.expense.data.dto.query.ReceiptQueryProperties;
-import com.consolefire.xpenser.expense.data.dto.response.ReceiptResponseDto;
+import com.consolefire.xpenser.expense.data.dto.response.ReceiptDetailResponseDto;
 import com.consolefire.xpenser.expense.data.entiry.ReceiptEntity;
 import com.consolefire.xpenser.expense.data.entiry.ReceiptEntity.Fields;
 import com.consolefire.xpenser.expense.data.exceptions.UnexpectedCountOfRecordsFoundException;
@@ -30,30 +30,27 @@ public class ReceiptQueryServiceImpl implements ReceiptQueryService {
     private final EntityManager entityManager;
 
     @Override
-    public Optional<ReceiptResponseDto> fetchWithIdentifier(String marketPlaceCode, String storeCode,
+    public Optional<ReceiptDetailResponseDto> fetchWithIdentifier(String marketPlaceCode, String storeCode,
         String identifier) {
         Optional<ReceiptEntity> receiptEntity = receiptRepository.findByIdentifierAndMarketPlaceCodeAndStoreCode(
             identifier, marketPlaceCode, storeCode);
-        return Optional.ofNullable(receiptEntity.map(receiptMapper::toResponseDto).orElse(null));
+        return Optional.ofNullable(receiptEntity.map(receiptMapper::fromEntityToReceiptDetailResponseDto).orElse(null));
     }
 
     @Override
-    public List<ReceiptResponseDto> fetchAllReceipts(QueryRequestDto queryRequestDto) {
+    public List<ReceiptDetailResponseDto> fetchAllReceipts(QueryRequestDto queryRequestDto) {
         log.info("Fetching all receipts with query: {}", queryRequestDto);
         List<ReceiptEntity> entities = receiptRepository.findAll();
 
         return entities.stream()
-            .map(entity -> ReceiptResponseDto.builder()
-                .receiptId(entity.getId())
-                .identifier(entity.getIdentifier())
-                .createdAt(entity.getCreatedAt())
-                .build())
+            .map(receiptMapper::fromEntityToReceiptDetailResponseDto)
             .collect(Collectors.toList());
     }
 
 
     @Override
-    public Optional<ReceiptResponseDto> querySingleRecord(QueryRequestDto<ReceiptQueryProperties> queryRequestDto) {
+    public Optional<ReceiptDetailResponseDto> querySingleRecord(
+        QueryRequestDto<ReceiptQueryProperties> queryRequestDto) {
         ReceiptQueryProperties queryProperties = queryRequestDto.getQueryProperties();
         if (queryProperties == null) {
             return Optional.empty();
@@ -87,11 +84,11 @@ public class ReceiptQueryServiceImpl implements ReceiptQueryService {
         if (receiptEntities.size() > 1) {
             throw new UnexpectedCountOfRecordsFoundException(1, receiptEntities.size());
         }
-        return Optional.of(receiptMapper.toResponseDto(receiptEntities.iterator().next()));
+        return Optional.of(receiptMapper.fromEntityToReceiptDetailResponseDto(receiptEntities.iterator().next()));
     }
 
     @Override
-    public List<ReceiptResponseDto> queryForList(QueryRequestDto<ReceiptQueryProperties> queryRequestDto) {
+    public List<ReceiptDetailResponseDto> queryForList(QueryRequestDto<ReceiptQueryProperties> queryRequestDto) {
         return List.of();
     }
 }
