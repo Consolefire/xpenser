@@ -1,0 +1,18 @@
+package com.consolefire.xpenser.expense.data;
+
+import java.math.BigDecimal;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
+
+@Getter
+@Builder
+@Jacksonized
+@RequiredArgsConstructor
+public class UnitValue {
+
+    private final String unitCode;
+    private final BigDecimal value;
+
+}

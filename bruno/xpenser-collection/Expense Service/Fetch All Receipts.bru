@@ -1,0 +1,15 @@
+meta {
+  name: Fetch All Receipts
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{expense-service.host}}:{{expense-service.port}}/query/receipts
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

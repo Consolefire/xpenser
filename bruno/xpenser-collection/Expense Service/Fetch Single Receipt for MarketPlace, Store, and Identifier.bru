@@ -1,0 +1,15 @@
+meta {
+  name: Fetch Single Receipt for MarketPlace, Store, and Identifier
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://{{expense-service.host}}:{{expense-service.port}}/query/receipts/M01/S01/id01
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
