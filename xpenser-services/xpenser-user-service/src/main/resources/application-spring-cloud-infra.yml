@@ -8,12 +8,8 @@ eureka:
   instance:
     hostname: ${DISCOVERY_INSTANCE_HOSTNAME:localhost}
 
-server:
-  port: ${USER_SERVICE_PORT:9100}
 
 spring:
-  application:
-    name: ${SPRING_APPLICATION_NAME:xpenser-user-service}
   config:
     import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
   cloud:

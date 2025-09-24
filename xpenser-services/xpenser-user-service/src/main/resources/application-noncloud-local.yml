@@ -1,0 +1,91 @@
+
+commons:
+  auth:
+    server:
+      host: localhost
+      port: 9010
+  infra:
+    database:
+      postgresql:
+        driver-class-name: org.postgresql.Driver
+        host: ${DB_HOST:localhost}
+        port: ${DB_PORT:15432}
+        database-name: ${DB_SERVER_NAME:neverland}
+        username: ${DB_USER:peterpan}
+        password: ${DB_PASSWORD:P3terP@n}
+        current-schema: ${DB_SCHEMA:xpenser_user_service}
+        #driver-options:
+        #  k: validate
+
+        pool: # Connection pool for R2DBC (e.g., r2dbc-pool)
+          name: PG_POOL
+          max-size: 10
+          initial-size: 5
+          max-idle-time: 30m
+          validation-query: SELECT 1
+          # Other pool properties as needed
+
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${commons.infra.database.postgresql.host}:${commons.infra.database.postgresql.port}/${commons.infra.database.postgresql.database-name}?currentSchema=${commons.infra.database.postgresql.current-schema}
+    username: ${commons.infra.database.postgresql.username}
+    password: ${commons.infra.database.postgresql.password}
+    driver-class-name: ${commons.infra.database.postgresql.driver-class-name}
+
+    # HikariCP specific properties (optional, as Hikari has sensible defaults)
+    hikari:
+      pool-name: DB_POOL
+      maximum-pool-size: 10 # Maximum number of connections in the pool
+      minimum-idle: 2 # Minimum number of idle connections to maintain
+      idle-timeout: 300000 # Maximum amount of time a connection can sit idle in the pool (ms, 5 minutes)
+      connection-timeout: 30000 # Maximum number of milliseconds that a client will wait for a connection from the pool
+      max-lifetime: 1800000 # Maximum lifetime of a connection in the pool (ms, 30 minutes)
+      # auto-commit: true # Whether connections should be auto-committed
+      # read-only: false # Whether connections should be read-only
+      leak-detection-threshold: 2000 # How long a connection can be out of the pool before a warning is logged (ms)
+      data-source-properties: # Properties to be set on the underlying JDBC DataSource
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+
+  # Optional: JPA/Hibernate properties if you are using them
+  jpa:
+    hibernate:
+      ddl-auto: none # or create, create-drop, none
+    show-sql: true # Log SQL statements
+    properties:
+      hibernate:
+        format_sql: true # Format SQL logs for readability
+        dialect: org.hibernate.dialect.PostgreSQLDialect # Your specific database dialect
+
+  flyway: # Flyway still manages schema, even for R2DBC
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    url: ${spring.datasource.url}
+    user: ${commons.infra.database.postgresql.username}
+    password: ${commons.infra.database.postgresql.password}
+    default-schema: ${commons.infra.database.postgresql.current-schema}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # This is crucial for your resource server.
+          # Replace with the issuer URI of your Authorization Server (e.g., Keycloak, Auth0, Okta).
+          # The resource server will use this to retrieve the public keys to validate JWTs.
+          issuer-uri: ${AUTH_ISSUER_URI:http://${commons.auth.server.host}:${commons.auth.server.port}}
+          # If using an opaque token (introspection), you'd use:
+          # opaquetoken:
+          #   introspection-uri: http://localhost:9000/oauth2/introspect
+          #   client-id: user-service-client
+          #   client-secret: secret

@@ -1,25 +1,12 @@
-eureka:
-  client:
-    enabled: ${DISCOVERY_ENABLED:true}
-    register-with-eureka: true
-    fetch-registry: true
-    serviceUrl:
-      defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8770/eureka/}
-  instance:
-    hostname: ${DISCOVERY_INSTANCE_HOSTNAME:localhost}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 server:
-  port: ${AUTH_SERVER_PORT:9000}
+  port: ${EXPENSE_AUTH_SERVER_PORT:9010}
 
 spring:
   application:
     name: ${SPRING_APPLICATION_NAME:xpenser-auth-server}
-  config:
-    import: configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
-  cloud:
-    config:
-      uri: ${CONFIG_SERVER_URL:http://localhost:8888/}
-      multiple-uri-strategy: connection-timeout-only
-      fail-fast: true
-      label: ${CONFIG_REPO_BRANCH_NAME:main}
-

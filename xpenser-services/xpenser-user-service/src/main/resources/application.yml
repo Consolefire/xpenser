@@ -1,0 +1,6 @@
+server:
+  port: ${EXPENSE_USER_SERVICE_PORT:9020}
+
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:xpenser-user-service}
