@@ -1,0 +1,44 @@
+.sidebar {
+  width: 250px;
+  background-color: #e9ecef; /* Light background for sidebar */
+  border-right: 1px solid #dee2e6; /* Separator line */
+  transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition for width and opacity */
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+  padding: 1.5rem 0; /* Vertical padding */
+  flex-shrink: 0; /* Prevents the sidebar from shrinking */
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Subtle shadow */
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar.collapsed {
+  width: 60px; /* New width for the collapsed state */
+  opacity: 0.9; /* Slightly transparent when collapsed */
+  align-items: center; /* Center content when collapsed */
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%; /* Ensure ul takes full width of sidebar */
+}
+
+.sidebar li {
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflow when collapsed */
+  text-overflow: ellipsis; /* Add ellipsis for hidden text */
+  color: #495057; /* Darker text color */
+}
+
+.sidebar.collapsed li {
+  padding: 0.8rem 0; /* Adjust padding for collapsed state */
+  text-align: center;
+}
+
+.sidebar li:hover {
+  background-color: #d1e7dd; /* Light green on hover */
+  color: #212529;
+}

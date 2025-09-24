@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.consolefire.xpenser</groupId>
@@ -9,13 +9,74 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-	<artifactId>xpenser-services</artifactId>
-	<packaging>pom</packaging>
+    <artifactId>xpenser-services</artifactId>
+    <packaging>pom</packaging>
 
-    <modules>
-        <module>expense-store</module>
-        <module>xpenser-mdm-service</module>
-        <module>xpenser-expense-service</module>
-        <module>xpenser-document-service</module>
-    </modules>
+
+    <profiles>
+        <profile>
+            <id>default-build</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>xpenser-mdm-service</module>
+                <module>xpenser-expense-service</module>
+                <module>xpenser-document-service</module>
+                <module>xpenser-auth-server</module>
+                <module>xpenser-user-service</module>
+                <module>xpenser-api-gateway</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>noncloud</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <apply.spring.profile>noncloud-local</apply.spring.profile>
+                <docker.tag.extension>noncloud</docker.tag.extension>
+            </properties>
+
+            <modules>
+                <module>xpenser-mdm-service</module>
+                <module>xpenser-expense-service</module>
+                <module>xpenser-document-service</module>
+                <module>xpenser-auth-server</module>
+                <module>xpenser-user-service</module>
+                <module>xpenser-api-gateway</module>
+            </modules>
+
+        </profile>
+
+        <profile>
+            <id>with-spring-cloud</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>xpenser-mdm-service</module>
+                <module>xpenser-expense-service</module>
+                <module>xpenser-document-service</module>
+                <module>xpenser-auth-server</module>
+                <module>xpenser-user-service</module>
+                <module>xpenser-api-gateway</module>
+            </modules>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-config</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>

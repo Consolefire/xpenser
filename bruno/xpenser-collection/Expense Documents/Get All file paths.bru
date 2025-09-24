@@ -1,0 +1,15 @@
+meta {
+  name: Get All file paths
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://{{expense-document.host}}:{{expense-document.port}}/files/9663bab8-6c27-4095-bc06-a5af2474a958__116740339_20250917_668.pdf
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

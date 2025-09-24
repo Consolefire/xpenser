@@ -1,0 +1,19 @@
+meta {
+  name: Create Receipt Document
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://{{expense-document.host}}:{{expense-document.port}}/receipts/{{default.receiptId}}/documents
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  file: @file(/Users/sdas/Downloads/116740339_20250917_668.pdf)
+}
+
+settings {
+  encodeUrl: true
+}

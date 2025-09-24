@@ -1,0 +1,37 @@
+
+services:
+  expense-service:
+    host: ${XPENSER_EXPENSE_SERVICE_HOST:localhost}
+    port: ${XPENSER_EXPENSE_SERVICE_PORT:9030}
+    url: ${XPENSER_EXPENSE_SERVICE_URL:http://${services.expense-service.host}:${services.expense-service.port}}
+  document-service:
+    host: ${XPENSER_DOCUMENT_SERVICE_HOST:localhost}
+    port: ${XPENSER_DOCUMENT_SERVICE_PORT:9040}
+    url: ${XPENSER_DOCUMENT_SERVICE_URL:http://${services.document-service.host}:${services.document-service.port}}
+
+spring:
+  cloud:
+    gateway:
+      enabled: true
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+      discovery:
+        locator:
+          enabled: false # Enable discovery service integration
+      routes:
+        - id: expense-service-route
+          uri: ${services.expense-service.url}
+          predicates:
+            - Path=/api/expense/**
+          filters:
+            - StripPrefix=2
+
+        - id: document-service-route
+          uri: ${services.document-service.url}
+          predicates:
+            - Path=/api/document/**
+          filters:
+            - StripPrefix=2
+
+

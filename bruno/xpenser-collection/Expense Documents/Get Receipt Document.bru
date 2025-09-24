@@ -1,0 +1,15 @@
+meta {
+  name: Get Receipt Document
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{expense-document.host}}:{{expense-document.port}}/receipts/{{default.receiptId}}/documents
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,15 @@
+meta {
+  name: GET File Paths
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{api-gateway.host}}:{{api-gateway.port}}/api/document/files
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

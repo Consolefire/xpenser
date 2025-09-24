@@ -1,0 +1,13 @@
+
+common:
+  infra:
+    file-store:
+      location: ${EXPENSE_DOCUMENT_ROOT:${user.home}/.xpenser/expense-documents}
+      max-file-size: 24MB
+
+server:
+  port: ${EXPENSE_DOCUMENT_APP_PORT:9040}
+
+spring:
+  application:
+    name: xpenser-document-service

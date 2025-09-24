@@ -1,0 +1,75 @@
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure container takes full viewport height */
+  background-color: #f8f9fa; /* Light grey background for the whole app */
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #343a40; /* Darker header background */
+  color: white;
+  padding: 1rem 2rem; /* More generous padding */
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Stronger shadow for header */
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header button {
+  background-color: #007bff; /* Blue button */
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.main-content {
+  display: flex;
+  flex: 1; /* This makes the main-content fill the remaining vertical space */
+  padding-top: 5rem; /* Space for the fixed header */
+  padding-bottom: 4rem; /* Space for the fixed footer */
+  overflow: hidden; /* Prevent main-content from causing scrollbar */
+}
+
+.content-area {
+  flex-grow: 1; /* This makes the content area take up all available space */
+  padding: 2rem;
+  overflow-y: auto; /* Allows content to scroll within its area */
+  background-color: #ffffff; /* White background for content area */
+  border-left: 1px solid #dee2e6; /* Line to separate from sidebar */
+}
+
+.content-area p {
+  margin-bottom: 1rem;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #343a40; /* Darker footer background */
+  color: white;
+  padding: 1rem 2rem; /* Consistent padding */
+  text-align: center;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.2); /* Shadow for footer */
+  font-size: 0.9rem;
+}

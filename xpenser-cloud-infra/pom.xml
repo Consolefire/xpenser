@@ -10,11 +10,19 @@
     <artifactId>xpenser-cloud-infra</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>xpenser-discovery-server</module>
-        <module>xpenser-config-server</module>
-        <module>xpenser-gateway</module>
-        <module>xpenser-auth-server</module>
-        <module>xpenser-user-service</module>
-    </modules>
+
+    <profiles>
+        <profile>
+            <id>with-spring-cloud</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>xpenser-discovery-server</module>
+                <module>xpenser-config-server</module>
+            </modules>
+        </profile>
+    </profiles>
+
+
 </project>

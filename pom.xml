@@ -10,7 +10,7 @@
 
     <properties>
         <java.version>24</java.version>
-        <spring-boot.version>3.5.4</spring-boot.version>
+        <spring-boot.version>3.5.6</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok.version>1.18.38</lombok.version>
@@ -20,20 +20,17 @@
 
         <skip.build.image>true</skip.build.image>
         <docker.url>consolefire.com/xpenser</docker.url>
+        <docker.tag.extension>noncloud</docker.tag.extension>
         <assembler.path>${project.basedir}/src/assembler</assembler.path>
 
         <surefireArgLine></surefireArgLine>
+
+        <apply.spring.profile>dev</apply.spring.profile>
     </properties>
 
-    <modules>
-        <module>xpenser-services</module>
-        <module>xpenser-cloud-infra</module>
-        <module>xpenser-integration-test</module>
-    </modules>
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -185,6 +182,7 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
+                        <parameters>true</parameters>
                         <annotationProcessorPaths>
                             <path>
                                 <groupId>org.projectlombok</groupId>
@@ -324,11 +322,22 @@
                             <enabled>true</enabled>
                             <configuration>${assembler.path}/layers.xml</configuration>
                         </layers>
+
+                        <profiles>
+                            <profile>default</profile>
+                            <profile>${apply.spring.profile}</profile>
+                        </profiles>
+
                         <image>
-                            <name>${docker.url}/${project.artifactId}:${project.version}_jdk${java.version}</name>
+                            <name>${docker.url}/${project.artifactId}:${project.version}_jdk${java.version}_${docker.tag.extension}</name>
                             <env>
                                 <BP_JVM_VERSION>${java.version}</BP_JVM_VERSION>
                             </env>
+                            <buildpacks>
+                                <buildpack>docker.io/paketobuildpacks/adoptium</buildpack>
+                                <buildpack>docker.io/paketobuildpacks/ca-certificates:latest</buildpack>
+                                <buildpack>docker.io/paketobuildpacks/java:latest</buildpack>
+                            </buildpacks>
                         </image>
                     </configuration>
                     <executions>
@@ -392,5 +401,60 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>default-build</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>xpenser-services</module>
+                <module>xpenser-cloud-infra</module>
+                <module>xpenser-integration-test</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>noncloud</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <apply.spring.profile>noncloud-dev</apply.spring.profile>
+                <docker.tag.extension>noncloud</docker.tag.extension>
+            </properties>
+
+            <modules>
+                <module>xpenser-services</module>
+                <module>xpenser-integration-test</module>
+            </modules>
+
+        </profile>
+
+        <profile>
+            <id>with-spring-cloud</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <apply.spring.profile>spring-cloud-infra</apply.spring.profile>
+                <DISCOVERY_ENABLED>true</DISCOVERY_ENABLED>
+                <DISCOVERY_SERVER_URL>http://localhost:8770/eureka/</DISCOVERY_SERVER_URL>
+                <DISCOVERY_INSTANCE_HOSTNAME>localhost</DISCOVERY_INSTANCE_HOSTNAME>
+                <CONFIG_SERVER_URL>http://localhost:8888/</CONFIG_SERVER_URL>
+                <docker.tag.extension>springcloud</docker.tag.extension>
+            </properties>
+
+            <modules>
+                <module>xpenser-services</module>
+                <module>xpenser-cloud-infra</module>
+                <module>xpenser-integration-test</module>
+            </modules>
+
+        </profile>
+
+
+    </profiles>
 
 </project>
