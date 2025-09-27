@@ -162,6 +162,17 @@ public class UserServiceImpl implements UserService, UserDetailsService, Reactiv
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Mono<User> getUserByUsername(String username) {
+        return Mono.defer(() -> Mono.fromCallable(() ->
+                userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"))
+            ))
+            .flatMap(this::fetchUserWithRolesAndPrivileges)
+            .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @Override
     @Transactional
     public Mono<Void> deleteUser(Long userId) {
         return Mono.defer(() -> Mono.fromRunnable(() -> {

@@ -20,41 +20,27 @@ commons:
           validation-query: SELECT 1
           # Other pool properties as needed
 
-
-
-services:
-  user-service:
-    host: ${XPENSER_USER_SERVICE_HOST:localhost}
-    port: ${XPENSER_USER_SERVICE_PORT:9020}
-    url: ${XPENSER_USER_SERVICE_URL:http://${services.user-service.host}:${services.user-service.port}}
-  expense-service:
-    host: ${XPENSER_EXPENSE_SERVICE_HOST:localhost}
-    port: ${XPENSER_EXPENSE_SERVICE_PORT:9030}
-    url: ${XPENSER_EXPENSE_SERVICE_URL:http://${services.expense-service.host}:${services.expense-service.port}}
-  document-service:
-    host: ${XPENSER_DOCUMENT_SERVICE_HOST:localhost}
-    port: ${XPENSER_DOCUMENT_SERVICE_PORT:9040}
-    url: ${XPENSER_DOCUMENT_SERVICE_URL:http://${services.document-service.host}:${services.document-service.port}}
-
-
-# Custom properties for Authorization Server configuration
-auth-server:
-  issuer-uri: ${AUTH_ISSUER_URI:http://${server.hostname}:${server.port}}
-  endpoints:
-    authorization: /oauth2/authorize
-    pushed-authorization-request: /oauth2/par
-    device-authorization: /oauth2/device_authorization
-    device-verification: /oauth2/device_verification
-    token: /oauth2/token
-    token-introspection: /oauth2/introspect
-    token-revocation: /oauth2/revoke
-    jwk-set: /oauth2/jwks
-    oidc-logout: /connect/logout
-    oidc-user-info: /userinfo
-    oidc-client-registration: /connect/register
-
+debug: true
 
 spring:
+  security:
+    user:
+      name: user
+      password: password
+    oauth2:
+      client:
+        registration:
+          my-oauth2-client:
+            provider: my-auth-server
+            client-id: my-client-id
+            client-secret: my-client-secret
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_basic
+            scope: openid,profile,message.read,message.write
+        provider:
+          my-auth-server:
+            issuer-uri: https://my-auth-server.com
+
   datasource:
     url: jdbc:postgresql://${commons.infra.database.postgresql.host}:${commons.infra.database.postgresql.port}/${commons.infra.database.postgresql.database-name}?currentSchema=${commons.infra.database.postgresql.current-schema}
     username: ${commons.infra.database.postgresql.username}

@@ -4,6 +4,7 @@ import com.consolefire.xpenser.cloud.user.data.dto.AdminUserUpdateRequestDto;
 import com.consolefire.xpenser.cloud.user.data.dto.UserRegistrationRequestDto;
 import com.consolefire.xpenser.cloud.user.data.dto.UserResponseDto;
 import com.consolefire.xpenser.cloud.user.data.dto.UserUpdateRequestDto;
+import com.consolefire.xpenser.cloud.user.data.entity.User;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,4 +22,5 @@ public interface UserService {
 
     Flux<UserResponseDto> getAllUsers();
 
+    Mono<User> getUserByUsername(String username);
 }

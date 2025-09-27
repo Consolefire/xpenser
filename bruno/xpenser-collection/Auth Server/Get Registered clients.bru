@@ -1,0 +1,20 @@
+meta {
+  name: Get Registered clients
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{auth-service.host}}:{{auth-service.port}}/client-registration/clients
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: client-registrar
+  password: 1b7e0043-d2f4-4536-8c9a-79d8b5c43e21
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,3 +1,35 @@
+
+
+gateway:
+  services:
+    api-gateway:
+      host: ${XPENSER_API_GATEWAY_HOST:localhost}
+      port: ${XPENSER_API_GATEWAY_PORT:9020}
+      base-url: ${XPENSER_API_GATEWAY_URL:http://${gateway.services.user-service.host}:${gateway.services.user-service.port}}
+    user-service:
+      host: ${XPENSER_USER_SERVICE_HOST:localhost}
+      port: ${XPENSER_USER_SERVICE_PORT:9020}
+      base-url: ${XPENSER_USER_SERVICE_URL:http://${gateway.services.user-service.host}:${gateway.services.user-service.port}}
+      path-prefix: /oauth2/users
+
+
+# Custom properties for Authorization Server configuration
+auth-server:
+  issuer-uri: ${AUTH_ISSUER_URI:http://localhost:${server.port}}
+  endpoints:
+    authorization: /oauth2/authorize
+    pushed-authorization-request: /oauth2/par
+    device-authorization: /oauth2/device_authorization
+    device-verification: /oauth2/device_verification
+    token: /oauth2/token
+    token-introspection: /oauth2/introspect
+    token-revocation: /oauth2/revoke
+    jwk-set: /oauth2/jwks
+    oidc-logout: /connect/logout
+    oidc-user-info: /userinfo
+    oidc-client-registration: /connect/register
+
+
 management:
   endpoints:
     web:

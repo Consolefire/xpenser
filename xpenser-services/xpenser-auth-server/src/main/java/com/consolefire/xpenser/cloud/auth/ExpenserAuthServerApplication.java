@@ -3,10 +3,10 @@ package com.consolefire.xpenser.cloud.auth;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
-public class AuthServerApplication {
+@SpringBootApplication(scanBasePackages = {"com.consolefire.xpenser.cloud.auth"})
+public class ExpenserAuthServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AuthServerApplication.class, args);
+        SpringApplication.run(ExpenserAuthServerApplication.class, args);
     }
 }
