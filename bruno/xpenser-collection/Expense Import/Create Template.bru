@@ -1,0 +1,21 @@
+meta {
+  name: Create Template
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://{{expense-import.host}}:{{expense-import.port}}/import-templates
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name":"t001", "template":"some template"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

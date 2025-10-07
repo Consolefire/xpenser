@@ -1,0 +1,30 @@
+FORMAT: DE
+Marketplace Code: ALDI_SUD
+Store Code: Mering-12345
+Terminal Nr: 123
+Store Nr: 324
+Bill Number: 432
+Date: 20.02.25
+Time: 08:22
+Currency: EURO
+Receipt ID:	<exp>T${Marketplace Code}-S${Store Code}-B${Bill Number}</exp>
+Total: 12,23
+Payments:
+	<csv>
+	Mode;Type;Number
+	CARD;GIRO;791300
+
+	</csv>
+Taxes:
+	Total: 1,23
+	<csv>
+Type;Unit;Taxable Amount;Calculated Tax
+	VAT;7%;12,22;1,23
+	</csv>
+
+Items:
+    <csv>
+        Code;Name;Quantity;Per unit value;Unit Code;Price;Category
+        12334;Jjhg jGH kjhg;2;1;KG;2;A
+        Auy987987ss;Yuyiuyiy;4;1,2;P;4,8;B
+    </csv>

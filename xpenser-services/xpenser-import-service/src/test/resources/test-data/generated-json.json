@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "countryCode": "DE",
+    "terminalNumber": "123",
+    "storeNumber": "324",
+    "serialNumber": "432"
+  },
+  "identifier": "546546-8768768k-jhkj",
+  "marketPlaceCode": "ALDI_SUD",
+  "storeCode": "Mering-12345",
+  "currency": "EURO",
+  "total": 12.23,
+  "timestamp": "2025-02-20T08:22:00",
+  "payments": [
+    {
+      "mode": "CARD",
+      "amount": 12.34,
+      "currency": "EURO",
+      "card": {
+        "type": "GIRO_CARD",
+        "number": "898989"
+      }
+    },
+    {
+      "mode": "CASH",
+      "amount": 2.34,
+      "currency": "EURO"
+    },
+    {
+      "mode": "COUPON",
+      "amount": 12.34,
+      "currency": "EURO",
+      "coupon": {
+        "type": "RECYCLE",
+        "identifier": "AC989"
+      }
+    }
+  ],
+  "tax": {
+    "total": 1.23,
+    "taxes": [
+      {
+        "type": "VAT",
+        "taxUnit": {
+          "value": 0.07,
+          "unit": "PERCENT"
+        },
+        "taxableAmount": 12.22,
+        "amount": 1.23,
+        "itemCategory": "GENERAL"
+      }
+    ]
+  },
+  "items": [
+    {
+      "code": "12334",
+      "title": "Jjhg jGH kjhg",
+      "quantity": 2.0,
+      "price": 2.0,
+      "categoryCode": "A",
+      "unitValue": {
+        "value": 1.0,
+        "unitCode": "KG"
+      }
+    },
+    {
+      "code": "Auy987987ss",
+      "title": "Yuyiuyiy ",
+      "quantity": 4.0,
+      "price": 4.8,
+      "categoryCode": "B",
+      "unitValue": {
+        "value": 1.2,
+        "unitCode": "P"
+      }
+    }
+  ]
+}

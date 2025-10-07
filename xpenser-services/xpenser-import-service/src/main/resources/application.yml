@@ -1,0 +1,6 @@
+server:
+  port: ${IMPORT_SERVICE_SERVER_PORT:9060}
+
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME:xpenser-import-service}

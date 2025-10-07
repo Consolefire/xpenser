@@ -1,0 +1,15 @@
+meta {
+  name: Get All Templates
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://{{expense-import.host}}:{{expense-import.port}}/templates
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

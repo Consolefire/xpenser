@@ -23,6 +23,7 @@
                 <module>xpenser-mdm-service</module>
                 <module>xpenser-expense-service</module>
                 <module>xpenser-document-service</module>
+                <module>xpenser-import-service</module>
                 <module>xpenser-auth-server</module>
                 <module>xpenser-user-service</module>
                 <module>xpenser-api-gateway</module>
@@ -43,6 +44,7 @@
                 <module>xpenser-mdm-service</module>
                 <module>xpenser-expense-service</module>
                 <module>xpenser-document-service</module>
+                <module>xpenser-import-service</module>
                 <module>xpenser-auth-server</module>
                 <module>xpenser-user-service</module>
                 <module>xpenser-api-gateway</module>
@@ -59,6 +61,7 @@
                 <module>xpenser-mdm-service</module>
                 <module>xpenser-expense-service</module>
                 <module>xpenser-document-service</module>
+                <module>xpenser-import-service</module>
                 <module>xpenser-auth-server</module>
                 <module>xpenser-user-service</module>
                 <module>xpenser-api-gateway</module>
