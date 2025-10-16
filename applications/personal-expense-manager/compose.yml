@@ -1,0 +1,9 @@
+services:
+  
+  personal-expense-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: docker-reactjs-sample
+    ports:
+      - "18080:8080"

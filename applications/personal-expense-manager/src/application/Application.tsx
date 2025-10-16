@@ -11,14 +11,7 @@ function Application() { // Renamed from App to Application
 
   return (
     <Layout currentPage={currentPage} onSelectPage={handleSelectPage}>
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Welcome!
-        </Typography>
-        <Typography variant="body1">
-          Select an option from the sidebar.
-        </Typography>
-      </Box>
+      
     </Layout>
   );
 }

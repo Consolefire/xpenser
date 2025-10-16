@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, useTheme } from '@mui/material';
 import DashboardPage from '../pages/DashboardPage'; // Updated import path
 import CreateExpensePage from '../pages/CreateExpensePage';
+import ReceiptForm from '../forms/ReceiptForm';
+import MinimalReceiptForm from '../forms/MinimalReceiptForm';
 
 interface MainContainerProps {
   children: React.ReactNode;
@@ -48,6 +50,8 @@ const MainContainer: React.FC<MainContainerProps> = ({
       {/* Conditionally render content based on currentPage */}
       {currentPage === 'Dashboard' ? <DashboardPage /> : children}
       {currentPage === 'Create Expense' ? <CreateExpensePage /> : children}
+      {currentPage === 'Add Receipt' ? <ReceiptForm /> : children}
+      {currentPage === 'Quick Receipt' ? <MinimalReceiptForm/> : children}
     </Box>
   );
 };
