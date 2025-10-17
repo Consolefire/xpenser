@@ -58,7 +58,7 @@ export interface MetadataDto {
 }
 
 // The main POJO structure
-export interface ReceiptImportDto {
+export interface ReceiptRequestDto {
   identifier: string; // Mandatory
   metadata: MetadataDto;
   marketPlaceCode: string; // Mandatory

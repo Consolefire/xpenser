@@ -12,11 +12,11 @@ import {
 
 // Import the API function from the new module
 import { postMinimalReceipt } from '../../../clients/receipt-import/receipt-import-client';
-import { ReceiptImportDto } from '../../types/ReceiptTypes'; 
+import { ReceiptRequestDto } from '../../types/ReceiptTypes'; 
 
 // --- Initial State for the minimal mandatory fields ---
 // ... (initialMinimalReceiptState remains the same) ...
-const initialMinimalReceiptState: ReceiptImportDto = {
+const initialMinimalReceiptState: ReceiptRequestDto = {
   identifier: '',
   marketPlaceCode: '',
   storeCode: '',
@@ -32,7 +32,7 @@ const initialMinimalReceiptState: ReceiptImportDto = {
 
 
 const MinimalReceiptForm: React.FC = () => {
-  const [receipt, setReceipt] = useState<ReceiptImportDto>(initialMinimalReceiptState);
+  const [receipt, setReceipt] = useState<ReceiptRequestDto>(initialMinimalReceiptState);
 
   // --- General Change Handler ---
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

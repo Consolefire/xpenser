@@ -45,7 +45,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, drawerWidth, closedDrawerWidt
     { text: 'Dashboard', icon: <DashboardIcon />, page: 'Dashboard' },
     { text: 'Create Expense', icon: <AddCircleOutline />, page: 'Create Expense' },
     { text: 'Add Receipt', icon: <AddCircleOutline />, page: 'Add Receipt' },
-    { text: 'Quick Receipt', icon: <AddCircleOutline />, page: 'Quick Receipt' }
+    { text: 'Quick Receipt', icon: <AddCircleOutline />, page: 'Quick Receipt' },
+    { text: 'Receipts', icon: <AddCircleOutline />, page: 'Receipts' }
   ];
 
   return (

@@ -1,0 +1,15 @@
+meta {
+  name: Get All Receipts
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://{{api-gateway.host}}:{{api-gateway.port}}/api/
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

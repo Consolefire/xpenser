@@ -4,7 +4,7 @@ import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.Ca
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.CouponDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.ItemDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.MetadataDto;
-import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.TaxDto;
+import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.TaxDetailDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.TaxUnitDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.UnitValueDto;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,7 +100,7 @@ public class ExcelReceiptImportServiceTest {
         assertThat(actualDto.getTax().getTotal()).isEqualTo(1.23);
         assertThat(actualDto.getTax().getTaxes()).hasSize(1);
 
-        TaxDto tax = actualDto.getTax().getTaxes().get(0);
+        TaxDetailDto tax = actualDto.getTax().getTaxes().get(0);
         assertThat(tax)
             .hasFieldOrPropertyWithValue("type", "VAT")
             .hasFieldOrPropertyWithValue("taxableAmount", 12.22)

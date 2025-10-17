@@ -4,6 +4,7 @@ import DashboardPage from '../pages/DashboardPage'; // Updated import path
 import CreateExpensePage from '../pages/CreateExpensePage';
 import ReceiptForm from '../forms/ReceiptForm';
 import MinimalReceiptForm from '../forms/MinimalReceiptForm';
+import Receipts from '../pages/Receipts';
 
 interface MainContainerProps {
   children: React.ReactNode;
@@ -52,6 +53,7 @@ const MainContainer: React.FC<MainContainerProps> = ({
       {currentPage === 'Create Expense' ? <CreateExpensePage /> : children}
       {currentPage === 'Add Receipt' ? <ReceiptForm /> : children}
       {currentPage === 'Quick Receipt' ? <MinimalReceiptForm/> : children}
+      {currentPage === 'Receipts' ? <Receipts/> : children}
     </Box>
   );
 };

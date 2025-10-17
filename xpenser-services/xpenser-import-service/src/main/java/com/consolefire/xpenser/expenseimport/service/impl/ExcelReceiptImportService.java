@@ -5,8 +5,8 @@ import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.Co
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.ItemDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.MetadataDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.PaymentDto;
+import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.TaxDetailDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.TaxDto;
-import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.TaxSectionDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.TaxUnitDto;
 import static com.consolefire.xpenser.expenseimport.data.dto.ReceiptImportDto.UnitValueDto;
 
@@ -141,10 +141,10 @@ public class ExcelReceiptImportService implements ReceiptImportService {
 
             // --- 3. Taxes Section (Starts Row 20, Index 19) ---
 
-            TaxSectionDto taxSection = new TaxSectionDto();
+            TaxDto taxSection = new TaxDto();
             taxSection.setTotal(safeParseDouble(getCellValue(sheet, 17, 2))); // C18
 
-            List<TaxDto> taxes = new ArrayList<>();
+            List<TaxDetailDto> taxes = new ArrayList<>();
             for (int i = 19; i <= sheet.getLastRowNum(); i++) {
                 String taxType = getCellValue(sheet, i, 1); // Col B
 
@@ -152,7 +152,7 @@ public class ExcelReceiptImportService implements ReceiptImportService {
                     break;
                 }
 
-                TaxDto taxEntry = new TaxDto();
+                TaxDetailDto taxEntry = new TaxDetailDto();
                 taxEntry.setType(taxType);
 
                 TaxUnitDto taxUnit = new TaxUnitDto();

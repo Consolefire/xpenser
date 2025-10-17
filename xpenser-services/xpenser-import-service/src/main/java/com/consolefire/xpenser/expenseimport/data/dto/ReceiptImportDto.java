@@ -26,7 +26,7 @@ public class ReceiptImportDto {
     private Double total;
     private String currency;
     private List<PaymentDto> payments;
-    private TaxSectionDto tax;
+    private TaxDto tax;
     private List<ItemDto> items;
 
     @Getter
@@ -93,10 +93,10 @@ public class ReceiptImportDto {
     @AllArgsConstructor
     @ToString
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class TaxSectionDto {
+    public static class TaxDto {
 
         private Double total;
-        private List<TaxDto> taxes;
+        private List<TaxDetailDto> taxes;
     }
 
     @Getter
@@ -106,7 +106,7 @@ public class ReceiptImportDto {
     @AllArgsConstructor
     @ToString
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    public static class TaxDto {
+    public static class TaxDetailDto {
 
         private String type;
         private TaxUnitDto taxUnit;
