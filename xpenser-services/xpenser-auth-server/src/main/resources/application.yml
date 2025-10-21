@@ -10,7 +10,7 @@ gateway:
       host: ${XPENSER_USER_SERVICE_HOST:localhost}
       port: ${XPENSER_USER_SERVICE_PORT:9020}
       base-url: ${XPENSER_USER_SERVICE_URL:http://${gateway.services.user-service.host}:${gateway.services.user-service.port}}
-      path-prefix: /oauth2/users
+      path-prefix: oauth2/userdetails
 
 
 # Custom properties for Authorization Server configuration

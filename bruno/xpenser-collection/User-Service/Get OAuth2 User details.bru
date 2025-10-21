@@ -1,0 +1,21 @@
+meta {
+  name: Get OAuth2 User details
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://{{user-service.host}}:{{user-service.port}}/oauth2/userdetails/admin
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{user-service.admin.username}}
+  password: {{user-service.admin.password}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

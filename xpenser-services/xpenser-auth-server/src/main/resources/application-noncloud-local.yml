@@ -4,7 +4,7 @@ commons:
       postgresql:
         driver-class-name: org.postgresql.Driver
         host: ${DB_HOST:localhost}
-        port: ${DB_PORT:15432}
+        port: ${DB_PORT:5433}
         database-name: ${DB_SERVER_NAME:neverland}
         username: ${DB_USER:peterpan}
         password: ${DB_PASSWORD:P3terP@n}
@@ -24,22 +24,10 @@ debug: true
 
 spring:
   security:
-    user:
-      name: user
-      password: password
     oauth2:
-      client:
-        registration:
-          my-oauth2-client:
-            provider: my-auth-server
-            client-id: my-client-id
-            client-secret: my-client-secret
-            authorization-grant-type: authorization_code
-            client-authentication-method: client_secret_basic
-            scope: openid,profile,message.read,message.write
-        provider:
-          my-auth-server:
-            issuer-uri: https://my-auth-server.com
+      authorizationserver:
+        issuer: http://localhost:${server.port}
+
 
   datasource:
     url: jdbc:postgresql://${commons.infra.database.postgresql.host}:${commons.infra.database.postgresql.port}/${commons.infra.database.postgresql.database-name}?currentSchema=${commons.infra.database.postgresql.current-schema}
